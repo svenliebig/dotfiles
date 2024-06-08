@@ -1,0 +1,13 @@
+*
+!.gitignore
+
+!.config/
+
+!.config/tmux
+!.config/tmux/tmux.conf
+
+!.config/alacritty
+!.config/alacritty/alacritty.toml
+
+!.config/oh-my-posh
+!.config/oh-my-posh/zen.toml
