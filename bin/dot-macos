@@ -56,7 +56,14 @@ setup_macos() {
   defaults write com.apple.finder ShowStatusBar -bool true
 
   log_info "Disable press-and-hold for keys in favor of key repeat"
-  defaults write NSGlobalDomain ApplePressAndHoldEnabled -bool false
+  for app in "Cursor" "Windsurf" "Visual Studio Code" "Ghostty"; do
+    if [ ! -d "/Applications/$app.app" ]; then
+      continue
+    fi
+
+    ns=$(defaults read "/Applications/$app.app/Contents/Info" CFBundleIdentifier)
+    defaults write "$ns" ApplePressAndHoldEnabled -bool false
+  done
 
   log_info "Set a blazingly fast keyboard repeat rate"
   defaults write NSGlobalDomain KeyRepeat -int 1
@@ -64,11 +71,11 @@ setup_macos() {
   log_info "Set a shorter Delay until key repeat"
   defaults write NSGlobalDomain InitialKeyRepeat -int 15
 
-  log_info "Enable tap to click (Trackpad)"
-  defaults write com.apple.driver.AppleBluetoothMultitouch.trackpad Clicking -bool true
+  # log_info "Enable tap to click (Trackpad)"
+  # defaults write com.apple.driver.AppleBluetoothMultitouch.trackpad Clicking -bool true
 
   log_info "Killing affected applications"
-  for app in Safari Finder Dock Mail SystemUIServer; do killall "$app" >/dev/null 2>&1; done
+  for app in Safari Finder Dock Mail SystemUIServer Cursor Windsurf "Visual Studio Code"; do killall "$app" >/dev/null 2>&1; done
 }
 
 main() {
