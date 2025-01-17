@@ -227,20 +227,6 @@ cmd_link() {
       fi
     done
 
-    # Handle .zshenv special case
-    if [ "$operation" = "link" ]; then
-      if [ ! -e "$HOME/.zshenv" ]; then
-        [ "$verbose" = true ] && log_info "Linking .zshenv"
-        ln -s "$DOTFILES/config/zsh/.zshenv" "$HOME/.zshenv"
-      else
-        [ "$verbose" = true ] && log_info "~/.zshenv already exists... Skipping."
-      fi
-    else # unlink
-      if [ -L "$HOME/.zshenv" ]; then
-        [ "$verbose" = true ] && log_info "Unlinking $HOME/.zshenv"
-        rm "$HOME/.zshenv"
-      fi
-    fi
   else
     # Handle specific package
     local target="$CONFIG_HOME/$pkg"
@@ -263,6 +249,23 @@ cmd_link() {
     else
       log_error "Package $pkg not found in config directory"
       return 1
+    fi
+  fi
+
+  if [[ "$pkg" == "all" || "$pkg" == "zsh" ]]; then
+    # Handle .zshenv special case
+    if [ "$operation" = "link" ]; then
+      if [ ! -e "$HOME/.zshenv" ]; then
+        [ "$verbose" = true ] && log_info "Linking .zshenv"
+        ln -s "$DOTFILES/config/zsh/.zshenv" "$HOME/.zshenv"
+      else
+        [ "$verbose" = true ] && log_info "~/.zshenv already exists... Skipping."
+      fi
+    else # unlink
+      if [ -L "$HOME/.zshenv" ]; then
+        [ "$verbose" = true ] && log_info "Unlinking $HOME/.zshenv"
+        rm "$HOME/.zshenv"
+      fi
     fi
   fi
 
