@@ -4,10 +4,29 @@
 alias reload!="RELOAD=1 source $XDG_CONFIG_HOME/zsh/.zshrc"
 
 # Filesystem aliases
-alias ..='cd ..'
-alias ...='cd ../..'
+alias ..="cd .."
+alias ...="cd ../.."
 alias ....="cd ../../.."
 alias .....="cd ../../../.."
+alias ws="cd $WORKSPACE"
+alias cdws="cd $WORKSPACE"
+alias r="cd $REPOSITORIES"
+alias cdr="cd $REPOSITORIES"
+alias cds="cd $SOFTWARE"
+alias cdp="cd $WORKSPACE/playground"
+alias cdc="cd $CACHEDIR"
+alias cdrg="cd $REPOSITORIES/git"
+alias cdru="cd $REPOSITORIES/utils"
+alias cdri="cd $REPOSITORIES/isbj"
+alias cdrn="cd $REPOSITORIES/nortal"
+alias cdric="cd $REPOSITORIES/isbj/commons"
+alias cdrir="cd $REPOSITORIES/isbj/redesign"
+alias cdriu="cd $REPOSITORIES/isbj/utils"
+
+alias boo=". $REPOSITORIES/git/binary-organizer/boo.sh"
+
+# This is because I'm stupid
+alias :q="exit"
 
 # Helpers
 alias grep='grep --color=auto'
@@ -37,6 +56,7 @@ else
   alias l="ls -lah ${colorflag}"
   alias ll="ls -lFh ${colorflag}"
 fi
+alias ls="ls --color"
 alias la="ls -AF ${colorflag}"
 alias lld="ls -l | grep ^d"
 alias rmf="rm -rf"

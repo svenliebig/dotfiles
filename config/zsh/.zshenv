@@ -11,7 +11,11 @@ SAVEHIST=10000
 
 export DOTFILES="$(dirname "$(dirname "$(dirname "$(readlink -f "${(%):-%N}")")")")"
 
-export CACHEDIR="$HOME/.local/share"
+export WORKSPACE="$HOME/workspace"
+export SOFTWARE="$WORKSPACE/software"
+export REPOSITORIES="$WORKSPACE/repositories"
+export CACHEDIR="$WORKSPACE/.cache"
+
 export VIM_TMP="$HOME/.vim-tmp"
 # add a config file for ripgrep
 export RIPGREP_CONFIG_PATH="$HOME/.config/ripgrep/config"
