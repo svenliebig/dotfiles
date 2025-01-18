@@ -33,6 +33,7 @@ bin/dot link zsh
 bin/dot-macos    ✅
 config/zsh       ✅
 config/boo       ✅
+config/git       ✅
 config/karabiner ⌛
 config/ghostty   ⌛
 config/tmux      ⌛
