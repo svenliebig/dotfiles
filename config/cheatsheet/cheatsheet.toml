@@ -1,0 +1,54 @@
+[tmux]
+name = "TMUX"
+shortcuts = [ 
+  { name = "Create Window", cmd = ["CTRL+b", "w"] },
+  { name = "Split -", cmd = ["CTRL+b", "\""] },
+  { name = "Split |", cmd = ["CTRL+b", "%"] },
+#  { name = "Zen Mode", cmd = ["CTRL+b", "z"] },
+  { name = "Close Pane", cmd = ["CTRL+b", "x"] },
+  { name = "Copy Mode", cmd = ["CTRL+b", "["] },
+#  { name = "Detach", cmd = ["CTRL+b", "d"] },
+#  { name = "Attach", cmd = ["CTRL+b", "a"] },
+  { name = "Rename Session", cmd = ["CTRL+b", "$"] },
+  { name = "Rename Window", cmd = ["CTRL+b", ","] },
+  { name = "List Sessions", cmd = ["CTRL+b", "w"] },
+  { name = "Previous Window", cmd = ["CTRL+b", "p"] },
+  { name = "Next Window", cmd = ["CTRL+b", "n"] },
+  { name = "Move Left", cmd = ["CTRL+b", "{" ] },
+  { name = "Move Right", cmd = ["CTRL+b", "}" ] },
+  { name = "Transform Pane to Window", cmd = ["CTRL+b", "!" ] },
+  { name = "Toggle Layout", cmd = ["CTRL+b", "space" ] },
+]
+
+[nvim]
+name = "NVIM"
+# https://gist.github.com/danidiaz/37a69305e2ed3319bfff9631175c5d0f
+shortcuts = [ 
+  { name = "Target Directory", cmd = ["m", "t"] },
+  { name = "Mark File", cmd = ["m", "f"] },
+  { name = "Copy Marked Files", cmd = ["m", "c"] },
+  { name = "Move Marked Files", cmd = ["m", "m"] },
+  { name = "Execute on Marked Files", cmd = ["m", "x"] },
+  { name = "Resume Search", cmd = ["<leader>", "s", "r"] },
+  { name = "Telescope: Open Split Vertically", cmd = ["CTRL+v"] },
+  { name = "Telescope: Open Split Horizontally", cmd = ["CTRL+x"] },
+]
+
+[shell]
+name = "Shell"
+shortcuts = [ 
+  { name = "Delete Word (←)", cmd = ["CTRL+w"] },
+  { name = "Delete Word (→)", cmd = ["ESC", "d"] },
+  { name = "Move Word (←)", cmd = ["ESC", "b"] },
+  { name = "Move Word (→)", cmd = ["ESC", "f"] },
+  { name = "Recall last Argument", cmd = ["ESC", "."] },
+]
+
+[editor]
+name = "IDE"
+shortcuts = [ 
+  { name = "Focus on Chat", cmd = ["Cmd+L"] },
+  { name = "New Chat", cmd = ["Cmd+?"] },
+  { name = "Inline Chat", cmd = ["Cmd+I"] },
+]
+

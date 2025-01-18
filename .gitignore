@@ -10,4 +10,5 @@ config/kitty/kitty-overrides.conf
 config/zsh/.zsh_history
 config/zsh/.zcompdump
 config/zsh/.zsh_sessions
+config/cheatsheet/log.txt
 .DS_Store

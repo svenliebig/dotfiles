@@ -5,6 +5,8 @@ tap "homebrew/bundle"
 if OS.mac?
   tap "FelixKratz/formulae"               # For janky borders
 
+  # TODO upload and add cheatsheet
+
   # taps
   brew "noti"                          # utility to display notifications from scripts
   brew "trash"                         # rm, but put in the trash rather than completely delete
