@@ -1,6 +1,6 @@
 # Dotfiles
 
-Welcome to my world! Here you'll find a collection of configuration files for various tools and programs that I use on a daily basis. These dotfiles have been carefully curated and customized to streamline **my** workflow and improve **my** productivity. Your results may vary, but feel free to give it a try! Whether you're a fellow developer looking to optimize your setup or just curious about how I organize my digital life, I hope you find something useful in these dotfiles. So take a look around and feel free to borrow, modify, or fork to your heart's content. Happy coding!
+This is a fork of the [nicknisi/dotfiles](https://github.com/nicknisi/dotfiles) repository, all the smart code comes from [nicknisi](https://github.com/nicknisi). I just adjusted the setup for my needs.
 
 ## Initial Setup
 
@@ -15,12 +15,28 @@ xcode-select --install
 ```
 
 ```bash
+echo "export DOTFILES=$HOME/workspace/repositories/git/dotfiles" >> $HOME/.zshenv
+mkdir -p ~/workspace/repositories/git
+cd ~/workspace/repositories/git
 git clone git@github.com:svenliebig/dotfiles.git
+cd dotfiles
+bin/dot link zsh
 ```
 
 > [!Note]
 >
 > This dotfiles configuration is set up in such a way that it _shouldn't_ matter where the repo exists on your system.
+
+## Migration
+
+```
+bin/dot-macos    ✅
+config/zsh       ✅
+config/boo       ✅
+config/karabiner ⌛
+config/tmux      ⌛
+Brewfile         ⌛
+```
 
 ## The `dot` Command
 
@@ -29,10 +45,12 @@ This repository includes a powerful `dot` command for managing your dotfiles. It
 ### Configuration
 
 The tool respects these environment variables:
+
 - `DOTFILES`: Path to your dotfiles directory
 - `PATH`: For discovering external commands
 
 By default, the following directories are ignored when linking:
+
 - bin
 - applescripts
 - resources
@@ -50,6 +68,7 @@ dot unlink [package]        # Unlink all or specific package
 >
 > This command won't be in the path until ZSH is properly configured.
 > Until that's the case, you can run the command from the dotfiles root.
+>
 > ```bash
 > bin/dot <command> <subcommand>
 > ```
@@ -64,6 +83,7 @@ dot backup -v               # Verbose output
 ```
 
 This will back up important files and directories including:
+
 - Existing dotfiles in your home directory
 - Neovim configuration (`~/.config/nvim/`)
 - Vim configuration (`~/.vim/` and `~/.vimrc`)
@@ -94,6 +114,7 @@ dot macos defaults    # Configure recommended macOS system defaults
 ```
 
 Configures various macOS system settings including:
+
 - Finder: show all filename extensions
 - Show hidden files by default
 - Only use UTF-8 in Terminal.app
