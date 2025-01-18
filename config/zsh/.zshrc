@@ -157,6 +157,8 @@ for file in "$ZDOTDIR/.zsh_prompt" "$ZDOTDIR/.zsh_aliases"; do
     fi
 done
 
+# Initialize Path Binaries
+boo init -s
 
 if [[ -x "$(command -v pnpm)" ]]; then
   export PNPM_HOME="$HOME/Library/pnpm"

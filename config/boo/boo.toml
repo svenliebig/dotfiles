@@ -1,0 +1,5 @@
+path = '/Users/svenliebig/workspace/software'
+
+[defaults]
+node = '20'
+maven = '3.8'
