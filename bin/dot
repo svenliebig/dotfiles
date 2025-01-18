@@ -90,6 +90,8 @@ cmd_clean() {
 cmd_backup() {
   local backup_dir="$HOME/dotfiles-backup"
   local verbose=false
+  
+  [[ -d "$backup_dir" ]] || mkdir -p "$backup_dir"
 
   while [[ $# -gt 0 ]]; do
     case "$1" in
@@ -128,18 +130,13 @@ cmd_backup() {
     ".zsh_aliases"
     ".zsh_functions"
     ".zsh_prompt"
-    ".config/aerospace"
-    ".config/git"
-    ".config/ghostty"
-    ".config/karabiner"
-    ".config/kitty"
-    ".config/lazygit"
-    ".config/nvim"
-    ".config/ripgrep"
-    ".config/tmux"
-    ".config/wezterm"
-    ".config/zsh"
   )
+
+  for config in "$DOTFILES/config"/*; do
+    if [ -d "$config" ]; then
+      files_to_backup+=(".config/$(basename "$config")")
+    fi
+  done
 
   tmpfile=$(mktemp)
   trap 'rm -f "$tmpfile"' EXIT

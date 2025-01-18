@@ -34,6 +34,7 @@ bin/dot-macos    ✅
 config/zsh       ✅
 config/boo       ✅
 config/karabiner ⌛
+config/ghostty   ⌛
 config/tmux      ⌛
 Brewfile         ⌛
 ```
