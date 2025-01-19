@@ -42,6 +42,7 @@ shortcuts = [
   { name = "Move Word (←)", cmd = ["ESC", "b"] },
   { name = "Move Word (→)", cmd = ["ESC", "f"] },
   { name = "Recall last Argument", cmd = ["ESC", "."] },
+  { name = "Create a Searchable Set", cmd = ["cat ... | fzf --reverse"] },
 ]
 
 [editor]

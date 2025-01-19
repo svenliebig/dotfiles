@@ -41,6 +41,23 @@ config/tmux       ⌛
 Brewfile          ⌛
 ```
 
+## Recommended Software
+
+All of this software can be installed via the `dot homebrew bundle` command. This section should just explain why it's needed.
+
+- [fzf](#fzf)
+- [neovim](#neovim)
+
+### `fzf`
+
+is a general-purpose command-line fuzzy finder. It's an interactive Unix filter for command-line that can be used with any list; files, command history, processes, hostnames, bookmarks, git commits, etc.
+
+```bash
+brew install fzf
+```
+
+It's used in the zsh plugins to provide a better experience when navigating the command line.
+
 ## The `dot` Command
 
 This repository includes a powerful `dot` command for managing your dotfiles. It replaces the previous `install.sh` script with a more flexible and maintainable solution.
