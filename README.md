@@ -37,7 +37,7 @@ config/git        ✅
 config/cheatsheet ✅
 config/karabiner  ⌛
 config/ghostty    ⌛
-config/tmux       ⌛
+config/tmux       ✅
 Brewfile          ⌛
 ```
 
