@@ -23,15 +23,21 @@ shortcuts = [
 [nvim]
 name = "NVIM"
 # https://gist.github.com/danidiaz/37a69305e2ed3319bfff9631175c5d0f
+# https://gist.github.com/t-mart/610795fcf7998559ea80
 shortcuts = [ 
   { name = "Target Directory", cmd = ["m", "t"] },
   { name = "Mark File", cmd = ["m", "f"] },
   { name = "Copy Marked Files", cmd = ["m", "c"] },
   { name = "Move Marked Files", cmd = ["m", "m"] },
   { name = "Execute on Marked Files", cmd = ["m", "x"] },
+  { name = "Apply Diff to Marked Files", cmd = ["m", "d"] },
+  { name = "Compress/Decompress Marked Files", cmd = ["m", "z"] },
   { name = "Resume Search", cmd = ["<leader>", "s", "r"] },
   { name = "Telescope: Open Split Vertically", cmd = ["CTRL+v"] },
   { name = "Telescope: Open Split Horizontally", cmd = ["CTRL+x"] },
+  { name = "Netrw: Go up one directory", cmd = ["-"] },
+  { name = "Netrw: Open file horizontally", cmd = ["o"] },
+  { name = "Netrw: Open file vertically", cmd = ["v"] },
 ]
 
 [shell]
