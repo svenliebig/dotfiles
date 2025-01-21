@@ -3,21 +3,21 @@
 tap "homebrew/bundle"
 
 if OS.mac?
-  tap "FelixKratz/formulae"               # For janky borders
+  # tap "FelixKratz/formulae"               # For janky borders
 
   # TODO upload and add cheatsheet
 
   # taps
   brew "noti"                          # utility to display notifications from scripts
   brew "trash"                         # rm, but put in the trash rather than completely delete
-  brew "borders"                       # add borders to windows
+  # brew "borders"                       # add borders to windows
 
   # Applications
   cask "ghostty"                       # a better terminal emulator
-  cask "wezterm"                       # a better terminal emulator
+  # cask "wezterm"                       # a better terminal emulator
   cask "1password/tap/1password-cli"   # 1Password CLI
   cask "karabiner-elements"            # keyboard customizer
-  cask "nikitabobko/tap/aerospace"     # a tiling window manager
+  # cask "nikitabobko/tap/aerospace"     # a tiling window manager
 
   # Fonts
   cask "font-symbols-only-nerd-font"   # nerd-only symbols font
