@@ -27,14 +27,22 @@ elsif OS.linux?
 end
 
 # Latest versions of some core utilities
-brew "git"                             # Git version control
-brew "vim"                             # Vim editor
 brew "bash"                            # bash shell
-brew "zsh"                             # zsh shell
+brew "git"                             # Git version control
 brew "grep"                            # grep
+brew "vim"                             # Vim editor
+brew "zsh"                             # zsh shell
 
 # packages
 brew "bat"                             # better cat
+brew "jq"                              # work with JSON files in shell scripts
+brew "lazygit"                         # a better git UI
+brew "neovim"                          # A better vim
+brew "python"                          # python (latest)
+brew "ripgrep"                         # very fast file searcher
+brew "tmux"                            # terminal multiplexer
+
+# to be sorted
 brew "cloc"                            # lines of code counter
 brew "entr"                            # file watcher / command runner
 brew "eza"                             # ls alternative
@@ -48,14 +56,8 @@ brew "glow"                            # markdown viewer
 brew "gnupg"                           # GPG
 brew "highlight"                       # code syntax highlighting
 brew "btop"                            # a top alternative
-brew "jq"                              # work with JSON files in shell scripts
-brew "lazygit"                         # a better git UI
-brew "neovim"                          # A better vim
-brew "python"                          # python (latest)
-brew "ripgrep"                         # very fast file searcher
 brew "shellcheck"                      # diagnostics for shell sripts
 brew "stylua"                          # lua code formatter
-brew "tmux"                            # terminal multiplexer
 brew "tree"                            # pretty-print directory contents
 brew "wdiff"                           # word differences in text files
 brew "wget"                            # internet file retriever
