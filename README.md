@@ -36,7 +36,7 @@ config/boo        ✅
 config/git        ✅
 config/cheatsheet ✅
 config/karabiner  ⌛
-config/ghostty    ⌛
+config/ghostty    ✅
 config/tmux       ✅
 Brewfile          ⌛
 ```

@@ -1,106 +1,29 @@
-# Theme settings
-theme = dark:vesper,light:catppuccin-latte
-# theme = dark:catppuccin-mocha,light:catppuccin-latte
-# background = #1c2021
-background = #0B1215
-background-opacity = 0.90
-background-blur-radius = 20
+# Theme
+theme = catppuccin-mocha
 bold-is-bright = true
 
-# window settings
-macos-titlebar-style = hidden
-window-decoration = true
-window-theme = auto
-window-padding-color = background
-window-padding-x = 0
-window-padding-y = 0
-window-padding-balance = false
+# Window Settings
+title = ""
+window-save-state = always
 window-colorspace = "display-p3"
-adjust-cell-height = 10%
+window-decoration = false
+window-theme = auto
+adjust-cell-width = -1
 
-shell-integration-features = no-cursor,sudo
-confirm-close-surface = false
+# Font Settings
+font-family = CaskaydiaCove Nerd Font
+font-size = 12
+font-style = bold
+font-feature = +liga
+cursor-style = block
 
 macos-icon = "custom-style"
 macos-icon-frame = "plastic"
 macos-icon-ghost-color = "#FFA500"
 macos-icon-screen-color = "#FFA500"
 
-# Font settings
-font-family = "Monaspace Neon Regular"
-font-size = 16
-cursor-color = #FFA500
-font-feature = +liga
-cursor-style = block
-
-
 clipboard-read = allow
 clipboard-write = allow
 clipboard-trim-trailing-spaces = true
 
-# Split keybindings
-# These are similar to tmux, but with the prefix being cmd+s
-keybind = cmd+s>\=new_split:right
-keybind = cmd+s>-=new_split:down
-
-keybind = cmd+s>c=new_tab
-keybind = cmd+s>shift+l=next_tab
-keybind = cmd+s>shift+h=previous_tab
-keybind = cmd+s>comma=move_tab:-1
-keybind = cmd+s>period=move_tab:1
-
-keybind = cmd+s>1=goto_tab:1
-keybind = cmd+s>2=goto_tab:2
-keybind = cmd+s>3=goto_tab:3
-keybind = cmd+s>4=goto_tab:4
-keybind = cmd+s>5=goto_tab:5
-keybind = cmd+s>6=goto_tab:6
-keybind = cmd+s>7=goto_tab:7
-keybind = cmd+s>8=goto_tab:8
-keybind = cmd+s>9=goto_tab:9
-
-keybind = cmd+s>j=goto_split:bottom
-keybind = cmd+s>k=goto_split:top
-keybind = cmd+s>h=goto_split:left
-keybind = cmd+s>l=goto_split:right
-
-keybind = cmd+s>z=toggle_split_zoom
-keybind = cmd+s>e=equalize_splits
-
-# Some shaders can be found in this repo, they're usually uploaded to discord
-# https://github.com/hackrmomo/ghostty-shaders
-# custom-shader = shaders/animated-gradient-shader.glsl
-# custom-shader = shaders/bettercrt.glsl
-# custom-shader = shaders/bloom.glsl
-# custom-shader = shaders/bloom1.glsl
-# custom-shader = shaders/bloom075.glsl
-# custom-shader = shaders/bloom060.glsl
-# custom-shader = shaders/bloom050.glsl
-custom-shader = shaders/bloom025.glsl
-# custom-shader = shaders/bloom050.glsl
-# custom-shader = shaders/bloom060.glsl
-# custom-shader = shaders/bloom075.glsl
-# custom-shader = shaders/bloom1.glsl
-# custom-shader = shaders/crt.glsl
-# custom-shader = shaders/cubes.glsl
-# custom-shader = shaders/dither.glsl
-# custom-shader = shaders/drunkard.glsl
-# custom-shader = shaders/fireworks-rockets.glsl
-# custom-shader = shaders/fireworks.glsl
-# custom-shader = shaders/gears-and-belts.glsl
-# custom-shader = shaders/glitchy.glsl
-# custom-shader = shaders/glow-rgbsplit-twitchy.glsl
-# custom-shader = shaders/gradient-background.glsl
-# custom-shader = shaders/inside-the-matrix.glsl
-# custom-shader = shaders/just-snow.glsl
-# custom-shader = shaders/matrix-hallway.glsl
-# custom-shader = shaders/negative.glsl
-# custom-shader = shaders/retro-terminal.glsl
-# custom-shader = shaders/smoke-and-ghost.glsl
-# custom-shader = shaders/sparks-from-fire.glsl
-# custom-shader = shaders/spotlight.glsl
-# custom-shader = shaders/starfield-colors.glsl
-# custom-shader = shaders/starfield.glsl
-# custom-shader = shaders/tft.glsl
-# custom-shader = shaders/underwater.glsl
-# custom-shader = shaders/water.glsl
+mouse-hide-while-typing = true
