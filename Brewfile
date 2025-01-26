@@ -35,6 +35,8 @@ brew "zsh"                             # zsh shell
 
 # packages
 brew "bat"                             # better cat
+brew "fzf"                             # Fuzzy file searcher, used in scripts and in vim
+brew "git-delta"                       # a better git diff
 brew "jq"                              # work with JSON files in shell scripts
 brew "lazygit"                         # a better git UI
 brew "neovim"                          # A better vim
@@ -49,9 +51,7 @@ brew "eza"                             # ls alternative
 brew "fd"                              # find alternative
 brew "fnm"                             # Fast Node version manager
 brew "rbenv"                           # Ruby version manager
-brew "fzf"                             # Fuzzy file searcher, used in scripts and in vim
 brew "gh"                              # GitHub CLI
-brew "git-delta"                       # a better git diff
 brew "glow"                            # markdown viewer
 brew "gnupg"                           # GPG
 brew "highlight"                       # code syntax highlighting
