@@ -30,15 +30,16 @@ bin/dot link zsh
 ## Migration
 
 ```
-bin/dot-macos     ✅
-config/zsh        ✅
-config/boo        ✅
-config/git        ✅
-config/cheatsheet ✅
-config/karabiner  ⌛
-config/ghostty    ✅
-config/tmux       ✅
 Brewfile          ⌛
+bin/dot-macos     ✅
+config/boo        ✅
+config/cheatsheet ✅
+config/ghostty    ✅
+config/git        ✅
+config/karabiner  ⌛
+config/lazygit    ✅
+config/tmux       ✅
+config/zsh        ✅
 ```
 
 ## Recommended Software
