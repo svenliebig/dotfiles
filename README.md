@@ -36,6 +36,7 @@ config/boo        ✅
 config/cheatsheet ✅
 config/ghostty    ✅
 config/git        ✅
+config/nvim       ⌛
 config/karabiner  ⌛
 config/lazygit    ✅
 config/tmux       ✅
