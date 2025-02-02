@@ -42,6 +42,31 @@ setopt HIST_IGNORE_ALL_DUPS      # delete old recorded entry if new entry is a d
 
 setopt COMPLETE_ALIASES
 
+# Enable vi mode
+bindkey -v
+
+# Set cursor style for different vi modes
+function zle-keymap-select {
+  if [[ ${KEYMAP} == vicmd ]] ||
+     [[ $1 = 'block' ]]; then
+    echo -ne '\e[2 q'
+  elif [[ ${KEYMAP} == main ]] ||
+       [[ ${KEYMAP} == viins ]] ||
+       [[ ${KEYMAP} = '' ]] ||
+       [[ $1 = 'beam' ]]; then
+    echo -ne '\e[6 q'
+  fi
+}
+zle -N zle-keymap-select
+
+# Initialize cursor shape
+echo -ne '\e[6 q'
+
+# Use beam shape cursor for each new prompt
+preexec() {
+    echo -ne '\e[6 q'
+}
+
 # make terminal command navigation sane again
 bindkey "^[[1;5C" forward-word                      # [Ctrl-right] - forward one word
 bindkey "^[[1;5D" backward-word                     # [Ctrl-left] - backward one word
