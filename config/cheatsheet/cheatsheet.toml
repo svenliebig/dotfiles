@@ -51,12 +51,15 @@ shortcuts = [
   { name = "Create a Searchable Set", cmd = ["cat ... | fzf --reverse"] },
 ]
 
-[editor]
-name = "IDE"
+[lazygit]
+name = "LazyGit"
 shortcuts = [ 
-  { name = "Focus on Chat", cmd = ["Cmd+L"] },
-  { name = "New Chat", cmd = ["Cmd+?"] },
-  { name = "Inline Chat", cmd = ["Cmd+I"] },
+  { name = "Amend File to Commit (in 3)", cmd = ["shift+A"] },
+  { name = "Fixup a Commit with the Current Staging", cmd = ["shift+F"] },
+  { name = "Squash all Fixup Commits into this Commit", cmd = ["shift+S"] },
+  { name = "Open PR (Browser)", cmd = ["o"] },
+  { name = "Revert Commit", cmd = ["t"] },
+  { name = "Move Commit Up / Down", cmd = ["ctrl + j / k"] },
 ]
 
 # [editor]
