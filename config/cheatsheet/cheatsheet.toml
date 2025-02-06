@@ -1,9 +1,9 @@
 [tmux]
 name = "TMUX"
 shortcuts = [ 
-  { name = "Create Window", cmd = ["CTRL+b", "w"] },
-  { name = "Split -", cmd = ["CTRL+b", "\""] },
-  { name = "Split |", cmd = ["CTRL+b", "%"] },
+  # { name = "Create Window", cmd = ["CTRL+b", "c"] },
+  # { name = "Split -", cmd = ["CTRL+b", "\""] },
+  # { name = "Split |", cmd = ["CTRL+b", "%"] },
 #  { name = "Zen Mode", cmd = ["CTRL+b", "z"] },
   { name = "Close Pane", cmd = ["CTRL+b", "x"] },
   { name = "Copy Mode", cmd = ["CTRL+b", "["] },
@@ -11,7 +11,7 @@ shortcuts = [
 #  { name = "Attach", cmd = ["CTRL+b", "a"] },
   { name = "Rename Session", cmd = ["CTRL+b", "$"] },
   { name = "Rename Window", cmd = ["CTRL+b", ","] },
-  { name = "List Sessions", cmd = ["CTRL+b", "w"] },
+  # { name = "List Sessions", cmd = ["CTRL+b", "w"] },
   { name = "Previous Window", cmd = ["CTRL+b", "p"] },
   { name = "Next Window", cmd = ["CTRL+b", "n"] },
   { name = "Move Left", cmd = ["CTRL+b", "{" ] },
