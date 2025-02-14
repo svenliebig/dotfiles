@@ -20,8 +20,8 @@ cursor-invert-fg-bg = true
 
 macos-icon = "custom-style"
 macos-icon-frame = "plastic"
-macos-icon-ghost-color = "#FFA500"
-macos-icon-screen-color = "#FFA500"
+macos-icon-ghost-color = "#1E1E2F"
+macos-icon-screen-color = "#1E1E2F"
 
 clipboard-read = allow
 clipboard-write = allow
