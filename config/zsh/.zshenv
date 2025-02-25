@@ -18,6 +18,8 @@ export REPOSITORIES="$WORKSPACE/repositories"
 export CACHEDIR="$WORKSPACE/.cache"
 export GOPATH="$CACHEDIR/go"
 
+export TRANSFORMERS_CACHE="$CACHEDIR/transformers"
+
 export VIM_TMP="$HOME/.vim-tmp"
 # add a config file for ripgrep
 export RIPGREP_CONFIG_PATH="$HOME/.config/ripgrep/config"
