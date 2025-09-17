@@ -124,7 +124,12 @@ require('lazy').setup({
   },
 
   -- Useful plugin to show you pending keybinds.
-  { 'folke/which-key.nvim',  opts = {} },
+  {
+    'folke/which-key.nvim',
+    event = "VeryLazy",
+    opts = {
+    }
+  },
   {
     -- Adds git related signs to the gutter, as well as utilities for managing changes
     'lewis6991/gitsigns.nvim',
@@ -213,6 +218,9 @@ require('lazy').setup({
   --     require('onedark').load()
   --   end,
   -- },
+  --
+  { "nvim-neotest/nvim-nio" },
+
 
   {
     -- Set lualine as statusline
@@ -493,7 +501,7 @@ vim.keymap.set('n', '<leader>sr', require('telescope.builtin').resume, { desc = 
 vim.defer_fn(function()
   require('nvim-treesitter.configs').setup {
     -- Add languages to be installed here that you want installed for treesitter
-    ensure_installed = { 'c', 'cpp', 'go', 'lua', 'python', 'rust', 'tsx', 'javascript', 'typescript', 'vimdoc', 'vim', 'bash', 'pkl', 'python', 'java', 'json' },
+    ensure_installed = { 'c', 'cpp', 'go', 'lua', 'python', 'rust', 'tsx', 'javascript', 'typescript', 'vimdoc', 'vim', 'bash', 'python', 'java', 'json' },
 
     -- Autoinstall languages that are not installed. Defaults to false (but you can change for yourself!)
     auto_install = false,
@@ -689,7 +697,7 @@ local function spread(template)
   end
 end
 
-local withMotions = spread(require('which-key.plugins.presets.init').motions)
+local withMotions = spread(require('which-key.plugins.presets').motions)
 
 -- document existing key chains
 require('which-key').register {
@@ -807,7 +815,7 @@ for type, icon in pairs(signs) do
   vim.fn.sign_define(hl, { text = icon, texthl = hl, numhl = "" })
 end
 
-mason_lspconfig.setup_handlers {
+mason_lspconfig.setup {
   function(server_name)
     require('lspconfig')[server_name].setup {
       capabilities = capabilities,
