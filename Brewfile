@@ -1,6 +1,6 @@
 # vim:ft=ruby
 
-tap "homebrew/bundle"
+# tap "homebrew/bundle"
 
 if OS.mac?
   # tap "FelixKratz/formulae"               # For janky borders
@@ -8,15 +8,15 @@ if OS.mac?
   # TODO upload and add cheatsheet
 
   # taps
-  brew "noti"                          # utility to display notifications from scripts
-  brew "trash"                         # rm, but put in the trash rather than completely delete
+  # brew "noti"                          # utility to display notifications from scripts
+  # brew "trash"                         # rm, but put in the trash rather than completely delete
   # brew "borders"                       # add borders to windows
 
   # Applications
   cask "ghostty"                       # a better terminal emulator
   # cask "wezterm"                       # a better terminal emulator
   cask "1password/tap/1password-cli"   # 1Password CLI
-  cask "karabiner-elements"            # keyboard customizer
+  # cask "karabiner-elements"            # keyboard customizer
   # cask "nikitabobko/tap/aerospace"     # a tiling window manager
 
   # Fonts
@@ -27,11 +27,11 @@ elsif OS.linux?
 end
 
 # Latest versions of some core utilities
-brew "bash"                            # bash shell
-brew "git"                             # Git version control
+# brew "bash"                            # bash shell
+# brew "git"                             # Git version control
 brew "grep"                            # grep
 brew "vim"                             # Vim editor
-brew "zsh"                             # zsh shell
+# brew "zsh"                             # zsh shell
 
 # packages
 brew "bat"                             # better cat
@@ -45,20 +45,20 @@ brew "ripgrep"                         # very fast file searcher
 brew "tmux"                            # terminal multiplexer
 
 # to be sorted
-brew "cloc"                            # lines of code counter
-brew "entr"                            # file watcher / command runner
-brew "eza"                             # ls alternative
-brew "fd"                              # find alternative
-brew "fnm"                             # Fast Node version manager
-brew "rbenv"                           # Ruby version manager
-brew "gh"                              # GitHub CLI
-brew "glow"                            # markdown viewer
-brew "gnupg"                           # GPG
-brew "highlight"                       # code syntax highlighting
-brew "btop"                            # a top alternative
-brew "shellcheck"                      # diagnostics for shell sripts
-brew "stylua"                          # lua code formatter
-brew "tree"                            # pretty-print directory contents
-brew "wdiff"                           # word differences in text files
-brew "wget"                            # internet file retriever
-brew "zoxide"                          # switch between most used directories
+# brew "cloc"                            # lines of code counter
+# brew "entr"                            # file watcher / command runner
+# brew "eza"                             # ls alternative
+# brew "fd"                              # find alternative
+# brew "fnm"                             # Fast Node version manager
+# brew "rbenv"                           # Ruby version manager
+# brew "gh"                              # GitHub CLI
+# brew "glow"                            # markdown viewer
+# brew "gnupg"                           # GPG
+# brew "highlight"                       # code syntax highlighting
+# brew "btop"                            # a top alternative
+# brew "shellcheck"                      # diagnostics for shell sripts
+# brew "stylua"                          # lua code formatter
+# brew "tree"                            # pretty-print directory contents
+# brew "wdiff"                           # word differences in text files
+# brew "wget"                            # internet file retriever
+# brew "zoxide"                          # switch between most used directories

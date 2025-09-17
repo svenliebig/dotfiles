@@ -201,10 +201,14 @@ cmd_link() {
 
   fmt_title_underline "$title_text"
 
+  log_info "Ensuring config home '$CONFIG_HOME'"
+  mkdir -p "$CONFIG_HOME"
+
   if [ "$pkg" = "all" ]; then
     # Handle all packages in config directory
     for config in "$DOTFILES/config"/*; do
       if [ -d "$config" ]; then
+
         local target="$CONFIG_HOME/$(basename "$config")"
         if [ "$operation" = "link" ]; then
           if [ -e "$target" ]; then

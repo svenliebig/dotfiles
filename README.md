@@ -15,12 +15,11 @@ xcode-select --install
 ```
 
 ```bash
-echo "export DOTFILES=$HOME/workspace/repositories/git/dotfiles" >> $HOME/.zshenv
 mkdir -p ~/workspace/repositories/git
 cd ~/workspace/repositories/git
 git clone git@github.com:svenliebig/dotfiles.git
 cd dotfiles
-bin/dot link zsh
+DOTFILES="$(pwd)" bin/dot link zsh
 ```
 
 > [!Note]
