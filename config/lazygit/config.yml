@@ -306,6 +306,8 @@ disableStartupPopups: false
 notARepository: prompt
 # If true, display a confirmation when subprocess terminates. This allows you to view the output of the subprocess before returning to Lazygit.
 promptToReturnFromSubprocess: true
+services:
+  'gitlab.nortal.com': 'gitlab:gitlab.nortal.com'
 # Keybindings
 keybinding:
   universal:
