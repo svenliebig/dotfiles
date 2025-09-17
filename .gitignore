@@ -1,15 +1,26 @@
 .netrwhist
 npm-debug.log
-config/nvim/spell
-config/nvim/shada
 vim/vim.symlink/spell/
 vim/vim.symlink/plugged/
 Brewfile.lock.json
 lazy-lock.json
+
+# Configs
+config/cheatsheet/log.txt
 config/kitty/kitty-overrides.conf
+config/nvim/spell
+config/nvim/shada
 config/zsh/.zsh_history
 config/zsh/.zcompdump
 config/zsh/.zsh_sessions
-config/cheatsheet/log.txt
-.DS_Store
 config/zsh/.zcompcache/brew_all_commands
+config/cursor/*
+!config/cursor/User/
+!config/cursor/User/**
+config/cursor/User/History
+config/cursor/User/**/globalStorage
+config/cursor/User/**/workspaceStorage
+
+
+# MacOS
+.DS_Store

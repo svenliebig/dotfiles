@@ -3,17 +3,56 @@ export ZSH=$DOTFILES/zsh
 source "$ZDOTDIR/.zsh_functions"
 
 ########################################################
+# Aliases
+########################################################
+
+[ -s "$ZDOTDIR/.zsh_aliases" ] && source "$ZDOTDIR/.zsh_aliases"  
+
+########################################################
+# Paths
+########################################################
+
+prepend_path /usr/local/opt/grep/libexec/gnubin
+prepend_path /usr/local/sbin
+prepend_path $DOTFILES/bin
+prepend_path $SOFTWARE/bin
+
+# If a ~/.zshrc.local exists, source it
+[[ -f ~/.zshrc.local ]] && source ~/.zshrc.local
+# If a ~/.localrc zshrc exists, source it
+[[ -a ~/.localrc ]] && source ~/.localrc
+
+boo init -s
+
+if [[ -x "$(command -v pnpm)" ]]; then
+  export PNPM_HOME="$HOME/Library/pnpm"
+  case ":$PATH:" in
+    *":$PNPM_HOME:"*) ;;
+    *) export PATH="$PNPM_HOME:$PATH" ;;
+  esac
+fi
+
+if [[ -x "$(command -v pyenv)" ]]; then
+  export PYENV_ROOT="$HOME/.pyenv"
+  [[ -d $PYENV_ROOT/bin ]] && export PATH="$PYENV_ROOT/bin:$PATH"
+  eval "$(pyenv init -)"
+fi
+
+if [[ "$PAGER" == "head -n 10000 | cat" || "$COMPOSER_NO_INTERACTION" == "1" ]]; then
+  return
+fi
+
+if [[ "$TERM_PROGRAM" == "vscode" || "$TERM_PROGRAM" == "cursor" ]]; then
+  return
+fi
+
+########################################################
 # Configuration
 ########################################################
 
 # initialize autocomplete
 autoload -U compinit add-zsh-hook
 compinit
-
-prepend_path /usr/local/opt/grep/libexec/gnubin
-prepend_path /usr/local/sbin
-prepend_path $DOTFILES/bin
-prepend_path $SOFTWARE/bin
 
 # define the code directory
 # This is where my code exists and where I want the `c` autocomplete to work from exclusively
@@ -170,31 +209,7 @@ else # macOS `ls`
     colorflag="-G"
 fi
 
-# If a ~/.zshrc.local exists, source it
-[[ -f ~/.zshrc.local ]] && source ~/.zshrc.local
-# If a ~/.localrc zshrc exists, source it
-[[ -a ~/.localrc ]] && source ~/.localrc
+[ -s "$ZDOTDIR/.zsh_prompt" ] && source "$ZDOTDIR/.zsh_prompt" 
 
-# look for all .zsh files and source them
-for file in "$ZDOTDIR/.zsh_prompt" "$ZDOTDIR/.zsh_aliases"; do
-    if [ -f $file ]; then
-        source $file
-    fi
-done
-
-# Initialize Path Binaries
-boo init -s
-
-if [[ -x "$(command -v pnpm)" ]]; then
-  export PNPM_HOME="$HOME/Library/pnpm"
-  case ":$PATH:" in
-    *":$PNPM_HOME:"*) ;;
-    *) export PATH="$PNPM_HOME:$PATH" ;;
-  esac
-fi
-
-if [[ -x "$(command -v pyenv)" ]]; then
-  export PYENV_ROOT="$HOME/.pyenv"
-  [[ -d $PYENV_ROOT/bin ]] && export PATH="$PYENV_ROOT/bin:$PATH"
-  eval "$(pyenv init -)"
-fi
+# bun completions
+[ -s "$SOFTWARE/bun/_bun" ] && source "$SOFTWARE/bun/_bun"

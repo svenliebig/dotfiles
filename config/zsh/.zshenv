@@ -18,7 +18,10 @@ export REPOSITORIES="$WORKSPACE/repositories"
 export CACHEDIR="$WORKSPACE/.cache"
 export GOPATH="$CACHEDIR/go"
 
+# deprecated and replaced with HF_HOME
 export TRANSFORMERS_CACHE="$CACHEDIR/transformers"
+export HF_HOME="$CACHEDIR/huggingface"
+export OLLAMA_MODELS="$CACHEDIR/ollama"
 
 export VIM_TMP="$HOME/.vim-tmp"
 # add a config file for ripgrep
@@ -39,3 +42,4 @@ typeset -aU path
 
 export EDITOR='nvim'
 export GIT_EDITOR='nvim'
+
