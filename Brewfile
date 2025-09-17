@@ -43,6 +43,7 @@ brew "neovim"                          # A better vim
 brew "python"                          # python (latest)
 brew "ripgrep"                         # very fast file searcher
 brew "tmux"                            # terminal multiplexer
+brew "go"                              # go (latest)
 
 # to be sorted
 # brew "cloc"                            # lines of code counter
