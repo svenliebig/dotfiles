@@ -22,6 +22,26 @@ cd dotfiles
 DOTFILES="$(pwd)" bin/dot link zsh
 ```
 
+Restart your terminal.
+
+```
+dot brew all
+dot link nvim
+dot link ghostty
+dot link tmux
+```
+
+Tmux specific, we need to clear our the plugins folder and install the tmux package manager:
+
+```
+rm -rf "$DOTFILES/config/tmux/plugins/*"
+git clone https://github.com/tmux-plugins/tpm "$DOTFILES/config/tmux/plugins/tpm"
+```
+
+### Fonts 
+
+Install the [Caskadia Cove NerdFont](https://www.nerdfonts.com/font-downloads) for Ghostty, and [Cascadia Code](https://github.com/microsoft/cascadia-code) for VSCode / Cursor.
+
 > [!Note]
 >
 > This dotfiles configuration is set up in such a way that it _shouldn't_ matter where the repo exists on your system.
@@ -29,13 +49,13 @@ DOTFILES="$(pwd)" bin/dot link zsh
 ## Migration
 
 ```
-Brewfile          ⌛
+Brewfile          ✅
 bin/dot-macos     ✅
 config/boo        ✅
 config/cheatsheet ✅
 config/ghostty    ✅
 config/git        ✅
-config/nvim       ⌛
+config/nvim       ✅
 config/karabiner  ⌛
 config/lazygit    ✅
 config/tmux       ✅
