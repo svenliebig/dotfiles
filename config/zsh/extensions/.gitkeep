@@ -1,0 +1,2 @@
+# this directory allows you to create any fiel that is sourceable by zsh in here, and it will be added
+# on shell startup. files here are ignored by git.

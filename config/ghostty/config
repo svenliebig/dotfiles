@@ -11,12 +11,13 @@ window-theme = auto
 adjust-cell-width = -1
 
 # Font Settings
-font-family = CaskaydiaCove Nerd Font
+font-family = 'CaskaydiaCove Nerd Font'
 font-size = 12
 font-style = bold
 font-feature = +liga
 cursor-style = block
 cursor-invert-fg-bg = true
+font-thicken = true
 
 macos-icon = "custom-style"
 macos-icon-frame = "plastic"

@@ -21,6 +21,8 @@ config/cursor/User/History
 config/cursor/User/**/globalStorage
 config/cursor/User/**/workspaceStorage
 
+config/zsh/extensions/*
+!config/zsh/extensions/.gitkeep
 
 # MacOS
 .DS_Store

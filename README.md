@@ -38,6 +38,26 @@ rm -rf "$DOTFILES/config/tmux/plugins/*"
 git clone https://github.com/tmux-plugins/tpm "$DOTFILES/config/tmux/plugins/tpm"
 ```
 
+### Java Development
+
+1) Install [SDKMAN](https://sdkman.io/)
+
+  ```bash
+  curl -s "https://get.sdkman.io" | bash
+  ```
+
+2) Install [OpenJDK](https://sdkman.io/jdks/open/)
+
+  ```bash
+  sdk install java 21.0.2-open
+  ```
+
+3) Use JDK
+
+  ```bash
+  ...
+  ```
+
 ### Fonts 
 
 Install the [Caskadia Cove NerdFont](https://www.nerdfonts.com/font-downloads) for Ghostty, and [Cascadia Code](https://github.com/microsoft/cascadia-code) for VSCode / Cursor.

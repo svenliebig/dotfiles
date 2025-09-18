@@ -18,6 +18,7 @@ export REPOSITORIES="$WORKSPACE/repositories"
 export CACHEDIR="$WORKSPACE/.cache"
 export GOPATH="$CACHEDIR/go"
 export GRADLE_USER_HOME="$CACHEDIR/gradle"
+export SDKMAN_DIR="$CACHEDIR/sdkman"
 
 # deprecated and replaced with HF_HOME
 export TRANSFORMERS_CACHE="$CACHEDIR/transformers"

@@ -22,6 +22,13 @@ prepend_path $SOFTWARE/bin
 # If a ~/.localrc zshrc exists, source it
 [[ -a ~/.localrc ]] && source ~/.localrc
 
+# list all files in $ZDOTDIR/extensions and source them
+if [[ -d "$ZDOTDIR/extensions" ]]; then
+    for file in "$ZDOTDIR/extensions"/*; do
+        [[ -f "$file" && -r "$file" ]] && source "$file"
+    done
+fi
+
 boo init -s
 
 if [[ -x "$(command -v pnpm)" ]]; then
@@ -214,6 +221,4 @@ fi
 # bun completions
 [ -s "$SOFTWARE/bun/_bun" ] && source "$SOFTWARE/bun/_bun"
 
-#THIS MUST BE AT THE END OF THE FILE FOR SDKMAN TO WORK!!!
-export SDKMAN_DIR="$HOME/.sdkman"
-[[ -s "$HOME/.sdkman/bin/sdkman-init.sh" ]] && source "$HOME/.sdkman/bin/sdkman-init.sh"
+[[ -s "$SDKMAN_DIR/bin/sdkman-init.sh" ]] && source "$SDKMAN_DIR/bin/sdkman-init.sh"
