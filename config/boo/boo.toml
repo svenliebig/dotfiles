@@ -1,4 +1,4 @@
-path = '/Users/svenliebig/workspace/software'
+path = '/Users/sven.liebig/workspace/software'
 
 [defaults]
 node = '22'
