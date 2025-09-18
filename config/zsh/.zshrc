@@ -213,3 +213,7 @@ fi
 
 # bun completions
 [ -s "$SOFTWARE/bun/_bun" ] && source "$SOFTWARE/bun/_bun"
+
+#THIS MUST BE AT THE END OF THE FILE FOR SDKMAN TO WORK!!!
+export SDKMAN_DIR="$HOME/.sdkman"
+[[ -s "$HOME/.sdkman/bin/sdkman-init.sh" ]] && source "$HOME/.sdkman/bin/sdkman-init.sh"
