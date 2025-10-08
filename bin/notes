@@ -1,0 +1,54 @@
+#!/usr/bin/env zsh
+
+NOTES_DIR="$HOME/notes"
+
+GUM_CHOOSE_HEADER_FOREGROUND="#89b4fa"
+GUM_CHOOSE_CURSOR_FOREGROUND="#cba6f7"
+GUM_CHOOSE_CURSOR_BACKGROUND="#313244"
+GUM_CHOOSE_ITEM_FOREGROUND="#cdd6f4"
+GUM_CHOOSE_CURSOR=" "
+
+[[ -d "$NOTES_DIR" ]] || mkdir -p "$NOTES_DIR"
+
+note_options=(" New note:new" "󰛌 Delete notes:delete")
+
+files=($NOTES_DIR/*)
+for i in {1..${#files}} ; do
+  note_options+=("󱇧 ${files[i]}:${files[i]}")
+done
+
+opt=$(printf "%s\n" "${note_options[@]}")
+
+SELECTED=$(echo $opt | gum choose --label-delimiter=":" --header="")
+
+delete_notes() {
+  DELETED=$(gum choose --no-limit $NOTES_DIR/* --header="Choose files to delete")
+
+  for del in $DELETED; do
+    rm $del
+  done
+}
+
+new_note() {
+  FILENAME=$(gum input --placeholder "Filename?")
+  FILEPATH="$NOTES_DIR/$FILENAME.md"
+
+  if [[ -e "$FILEPATH" ]] then
+    echo "File already exists."
+    exit
+  fi
+
+  touch "$FILEPATH"
+  $EDITOR "$FILEPATH"
+}
+
+open_note() {
+  nvim $1
+}
+
+case "$SELECTED" in
+  new) new_note ;;
+  delete) delete_notes ;;
+  *.md) open_note $SELECTED ;;
+  *) exit;;
+esac
