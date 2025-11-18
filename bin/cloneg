@@ -1,0 +1,64 @@
+#!/usr/bin/env bash
+
+set -Eeuo pipefail
+source "$DOTFILES/bin/lib/common.sh"
+command_name=$(basename "${BASH_SOURCE[0]}")
+
+if ! command -v gh %>/dev/null; then
+  log_error "command gh is not installed. Exiting."
+  exit 1
+fi
+
+if ! command -v tmux %>/dev/null; then
+  log_error "command tmux is not installed. Exiting."
+  exit 1
+fi
+
+usage() {
+  cat <<EOF
+  $(fmt_key "Usage:") $(fmt_key "$command_name") $(fmt_value "[options] <command>")
+
+Clone a repository right from github and create a new tmux window with the repository
+starting to be cloned into.
+
+Options:
+    -h, --help       Show this help message
+EOF
+}
+
+main() {
+  local parameter=""
+
+  if [ $# -lt 1 ]; then
+    usage
+    exit 0
+  fi
+
+  while [[ $# -gt 0 ]]; do
+    case "$1" in
+    -h | --help)
+      usage
+      exit 0
+      ;;
+    *)
+      parameter="$1"
+      shift
+      ;;
+    esac
+  done
+
+
+  REPO_FOUND=$(gh search repos $parameter -L 1 --json name --jq 'length')
+
+  if [[ $REPO_FOUND -eq 0 ]]; then
+    log_error "repository '$parameter' does not exist. Exiting."
+    exit 1
+  fi
+
+  REPO_NAME="$(echo $parameter | awk -F '/' '{print $2}')"
+  REPO_DIR="$REPOSITORIES/git/$REPO_NAME"
+
+  tmux new-window -n $REPO_NAME -d "gh repo clone $parameter $REPO_DIR && cd $REPO_DIR && exec zsh" &>/dev/null
+}
+
+main "$@"
