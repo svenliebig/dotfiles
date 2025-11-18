@@ -20,8 +20,11 @@ if OS.mac?
   # cask "nikitabobko/tap/aerospace"     # a tiling window manager
 
   # Fonts
-  cask "font-symbols-only-nerd-font"   # nerd-only symbols font
-  cask "font-monaspace"                # Preferred monospace font
+  # cask "font-symbols-only-nerd-font"   # nerd-only symbols font
+  # cask "font-monaspace"                # Preferred monospace font
+  cask "font-caskaydia-cove-nerd-font" # preferred nerd font
+  cask "font-cascadia-code"            # preferred monospace font
+
 elsif OS.linux?
   brew "xclip"                         # access to clipboard (similar to pbcopy/pbpaste)
 end
@@ -30,7 +33,7 @@ end
 # brew "bash"                            # bash shell
 # brew "git"                             # Git version control
 brew "grep"                            # grep
-brew "vim"                             # Vim editor
+# brew "vim"                             # Vim editor
 # brew "zsh"                             # zsh shell
 
 # packages

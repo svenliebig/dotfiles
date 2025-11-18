@@ -25,7 +25,8 @@ DOTFILES="$(pwd)" bin/dot link zsh
 Restart your terminal.
 
 ```
-dot brew all
+dot homebrew install
+dot homebrew bundle
 dot link nvim
 dot link ghostty
 dot link tmux
