@@ -23,13 +23,18 @@ prepend_path $SOFTWARE/bin
 [[ -a ~/.localrc ]] && source ~/.localrc
 
 # list all files in $ZDOTDIR/extensions and source them
-if [[ -d "$ZDOTDIR/extensions" ]]; then
-    for file in "$ZDOTDIR/extensions"/*; do
-        [[ -f "$file" && -r "$file" ]] && source "$file"
-    done
+if [[ -d "$ZDOTDIR/extensions" && -n "$ZDOTDIR/extensions"(/N^F) ]]; then
+else
+  local items=("$ZDOTDIR/extensions"/*)
+  for file in "$ZDOTDIR/extensions"/*; do
+    [[ -f "$file" && -r "$file" ]] && source "$file"
+  done
 fi
 
-boo init -s
+
+if [[ -x "$(command -v boo)" ]]; then
+  boo init -s
+fi
 
 if [[ -x "$(command -v pnpm)" ]]; then
   export PNPM_HOME="$HOME/Library/pnpm"
@@ -222,3 +227,5 @@ fi
 [ -s "$SOFTWARE/bun/_bun" ] && source "$SOFTWARE/bun/_bun"
 
 [[ -s "$SDKMAN_DIR/bin/sdkman-init.sh" ]] && source "$SDKMAN_DIR/bin/sdkman-init.sh"
+
+echo "\033[32m\033[0m .zshrc loaded"
