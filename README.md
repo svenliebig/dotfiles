@@ -59,6 +59,10 @@ git clone https://github.com/tmux-plugins/tpm "$DOTFILES/config/tmux/plugins/tpm
   ...
   ```
 
+### Ruby on Rails
+
+Follow the instructions on [Install ruby on rails](https://guides.rubyonrails.org/install_ruby_on_rails.html).
+
 ### Fonts 
 
 Install the [Caskadia Cove NerdFont](https://www.nerdfonts.com/font-downloads) for Ghostty, and [Cascadia Code](https://github.com/microsoft/cascadia-code) for VSCode / Cursor.
@@ -205,14 +209,6 @@ dot homebrew bundle     # Install packages from Brewfile
 
 Using this command is only needed if your machine does not currently have Homebrew installed. You can also install if the main way by following the [instructions on their website](https://brew.sh).
 
-#### Legacy Cleanup (`dot legacy`)
-
-```bash
-dot legacy clean    # Clean up broken legacy symlinks
-```
-
-This legacy command specifically cleans up the old symlinks that might exist from rpevious iterations of this repository.
-
 ### Extending with Custom Commands
 
 The `dot` command is extensible. You can add custom commands by:
@@ -223,7 +219,7 @@ The `dot` command is extensible. You can add custom commands by:
 
 ## ZSH Configuration
 
-The prompt for ZSH is configured in the `cnofig/zsh/zshrc` file and performs the
+The prompt for ZSH is configured in the `config/zsh/zshrc` file and performs the
 following operations.
 
 - Sets `EDITOR` to `nvim`
@@ -408,31 +404,6 @@ following way.
 export TMUX_MINIMAL=1
 ```
 
-## Docker Setup
-
-A Dockerfile exists in the repository as a testing ground for linux support. To
-set up the image, make sure you have Docker installed and then run the following
-command.
-
-```bash
-docker build -t dotfiles --force-rm --build-arg PRIVATE_KEY="$(cat ~/.ssh/id_rsa)" --build-arg PUBLIC_KEY="$(cat ~/.ssh/id_rsa.pub)" .
-```
-
-This should create a `dotfiles` image which will set up the base environment
-with the dotfiles repo cloned. To run, execute the following command.
-
-```bash
-docker run -it --rm dotfiles
-```
-
-This will open a bash shell in the container which can then be used to manually
-test the dotfiles installation process with linux.
-
 ## Preferred software
-
-I almost exclusively work on macOS, so this list will be specific to that
-operating system, but several of these reccomendations are also available,
-cross-platform. For a full and up-to-date list of the software and gear that I use today, check out my
-[/uses](https://nicknisi.com/uses) page.
 
 - [Raycast](https://raycast.com)
