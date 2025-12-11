@@ -4,7 +4,7 @@
     "editor.fontFamily": "'Cascadia Code'",
     "editor.fontLigatures": true,
     "editor.cursorStyle": "line",
-    "editor.renderWhitespace": "all",
+    "editor.renderWhitespace": "boundary",
     "editor.stickyScroll.enabled": false,
     "editor.suggestSelection": "first",
     "editor.suggest.showStatusBar": true,
