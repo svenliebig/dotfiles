@@ -1,0 +1,491 @@
+{
+    "workbench.colorTheme": "Catppuccin Mocha",
+    "workbench.iconTheme": "catppuccin-mocha",
+    "editor.fontFamily": "'Cascadia Code'",
+    "editor.fontLigatures": true,
+    "editor.cursorStyle": "line",
+    "editor.renderWhitespace": "all",
+    "editor.stickyScroll.enabled": false,
+    "editor.suggestSelection": "first",
+    "editor.suggest.showStatusBar": true,
+    "editor.suggest.preview": true,
+    "editor.acceptSuggestionOnCommitCharacter": false,
+    "diffEditor.ignoreTrimWhitespace": true,
+    "editor.formatOnSave": true,
+    "editor.formatOnSaveMode": "modificationsIfAvailable",
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
+    "editor.codeActionsOnSave": {
+        "source.fixAll.eslint": "explicit",
+        "source.organizeImports": "explicit"
+    },
+    "[json]": {
+        "editor.defaultFormatter": "esbenp.prettier-vscode"
+    },
+    "vim.leader": "<space>",
+    "vim.highlightedyank.enable": true,
+    "vim.smartRelativeLine": true,
+    "vim.replaceWithRegister": true,
+    "vim.useSystemClipboard": true,
+    "vim.easymotion": true,
+    "vim.enableNeovim": true,
+    "vim.handleKeys": {
+        "<space>": true
+    },
+    "vim.insertModeKeyBindings": [
+        {
+            "before": [
+                "<C-f>"
+            ],
+            "commands": [
+                "workbench.files.action.focusFilesExplorer"
+            ]
+        },
+        {
+            "before": [
+                "<C-e>"
+            ],
+            "commands": [
+                "editor.action.triggerSuggest"
+            ]
+        },
+        {
+            "before": [
+                "<C-a>"
+            ],
+            "commands": [
+                "editor.action.inlineSuggest.commit"
+            ]
+        }
+    ],
+    "vim.normalModeKeyBindings": [
+        {
+            "before": [
+                ";",
+                "d"
+            ],
+            "commands": [
+                "workbench.actions.view.problems"
+            ]
+        },
+        {
+            "before": [
+                "<C-f>"
+            ],
+            "commands": [
+                "workbench.files.action.focusFilesExplorer"
+            ]
+        },
+        {
+            "before": [
+                "<leader>",
+                "s",
+                "f"
+            ],
+            "commands": [
+                "workbench.action.quickOpen"
+            ]
+        },
+        {
+            "before": [
+                "<leader>",
+                "y",
+                "p"
+            ],
+            "commands": [
+                "copy-json-path.copy"
+            ]
+        },
+        {
+            "before": [
+                "<leader>",
+                "s",
+                "g"
+            ],
+            "commands": [
+                "workbench.action.findInFiles"
+            ]
+        },
+        {
+            "before": [
+                "[",
+                "d"
+            ],
+            "commands": [
+                "editor.action.marker.prev"
+            ]
+        },
+        {
+            "before": [
+                "]",
+                "d"
+            ],
+            "commands": [
+                "editor.action.marker.next"
+            ]
+        },
+        {
+            "before": [
+                "<S-k>"
+            ],
+            "commands": [
+                "editor.action.showDefinitionPreviewHover"
+            ]
+        },
+        {
+            "before": [
+                "<leader>",
+                "k",
+                "a"
+            ],
+            "commands": [
+                ":! echo '${fileDirname}'"
+            ],
+            "after": [
+                "<Return>"
+            ]
+        },
+        {
+            "before": [
+                "s",
+                "s"
+            ],
+            "commands": [
+                "workbench.action.splitEditorDown"
+            ]
+        },
+        {
+            "before": [
+                "s",
+                "v"
+            ],
+            "commands": [
+                ":vsplit"
+            ],
+            "after": [
+                "<Return>",
+                "<C-w>",
+                "w"
+            ]
+        },
+        {
+            "before": [
+                "s",
+                "h"
+            ],
+            "after": [
+                "<C-w>",
+                "h"
+            ]
+        },
+        {
+            "before": [
+                "s",
+                "j"
+            ],
+            "after": [
+                "<C-w>",
+                "j"
+            ]
+        },
+        {
+            "before": [
+                "s",
+                "k"
+            ],
+            "after": [
+                "<C-w>",
+                "k"
+            ]
+        },
+        {
+            "before": [
+                "s",
+                "l"
+            ],
+            "after": [
+                "<C-w>",
+                "l"
+            ]
+        },
+        {
+            "before": [
+                "m",
+                "l"
+            ],
+            "commands": [
+                "workbench.action.moveEditorToRightGroup"
+            ]
+        },
+        {
+            "before": [
+                "m",
+                "h"
+            ],
+            "commands": [
+                "workbench.action.moveEditorToLeftGroup"
+            ]
+        },
+        {
+            "after": [
+                "<leader>",
+                "y",
+                "y"
+            ],
+            "before": [
+                "\"",
+                "*",
+                "y",
+                "y"
+            ]
+        },
+        {
+            "after": [
+                "<leader>",
+                "p"
+            ],
+            "before": [
+                "\"",
+                "*",
+                "p"
+            ]
+        },
+        {
+            "after": [
+                "<leader>",
+                "P"
+            ],
+            "before": [
+                "\"",
+                "*",
+                "P"
+            ]
+        },
+        // Code Action
+        {
+            "before": [
+                "g",
+                "a"
+            ],
+            "commands": [
+                "editor.action.quickFix"
+            ]
+        },
+        // Code Action Rename
+        {
+            "before": [
+                "g",
+                "r"
+            ],
+            "commands": [
+                "editor.action.rename"
+            ]
+        },
+        // Go to Definition
+        {
+            "before": [
+                "g",
+                "d"
+            ],
+            "commands": [
+                "editor.action.revealDefinition"
+            ]
+        },
+        // Go to Declaration
+        {
+            "before": [
+                "g",
+                "D"
+            ],
+            "commands": [
+                "editor.action.goToDeclaration"
+            ]
+        },
+        // Go to Implementation
+        {
+            "before": [
+                "g",
+                "i"
+            ],
+            "commands": [
+                "editor.action.goToImplementation"
+            ]
+        },
+        // Go To Type Definition
+        {
+            "before": [
+                "g",
+                "t"
+            ],
+            "commands": [
+                "editor.action.goToTypeDefinition"
+            ]
+        },
+        // Go to References
+        {
+            "before": [
+                "g",
+                "r"
+            ],
+            "commands": [
+                "editor.action.goToReferences"
+            ]
+        },
+        // File Explorer
+        {
+            "before": [
+                "\\"
+            ],
+            "commands": [
+                "workbench.files.action.focusFilesExplorer"
+            ]
+        }
+    ],
+    "vim.visualModeKeyBindings": [
+        {
+            "after": [
+                "<leader>",
+                "p"
+            ],
+            "before": [
+                "\"",
+                "*",
+                "p"
+            ]
+        },
+        {
+            "after": [
+                "<leader>",
+                "P"
+            ],
+            "before": [
+                "\"",
+                "*",
+                "P"
+            ]
+        },
+        {
+            "after": [
+                "<leader>",
+                "y"
+            ],
+            "before": [
+                "\"",
+                "*",
+                "y"
+            ]
+        },
+        {
+            "after": [
+                "<leader>",
+                "Y"
+            ],
+            "before": [
+                "\"",
+                "*",
+                "Y"
+            ]
+        },
+        {
+            "before": [
+                "<leader>",
+                "s",
+                "g"
+            ],
+            "commands": [
+                "workbench.action.findInFiles"
+            ]
+        },
+        {
+            "before": [
+                "<S-j>"
+            ],
+            "commands": [
+                "editor.action.moveLinesDownAction"
+            ]
+        },
+        {
+            "before": [
+                "<S-k>"
+            ],
+            "commands": [
+                "editor.action.moveLinesUpAction"
+            ]
+        },
+        // Code Action
+        {
+            "before": [
+                "g",
+                "a",
+            ],
+            "commands": [
+                "editor.action.quickFix"
+            ]
+        },
+        // Code Action Rename
+        {
+            "before": [
+                "g",
+                "r"
+            ],
+            "commands": [
+                "editor.action.rename"
+            ]
+        },
+    ],
+    "vim.normalModeKeyBindingsNonRecursive": [
+        {
+            "before": [
+                "<leader>",
+                "r"
+            ],
+            "after": [
+                "g",
+                "r"
+            ]
+        },
+        {
+            "before": [
+                "g",
+                "r"
+            ],
+            "after": []
+        }
+    ],
+    "workbench.colorCustomizations": {
+        "statusBar.background": "#005f5f",
+        "statusBar.noFolderBackground": "#005f5f",
+        "statusBar.debuggingBackground": "#005f5f",
+        "statusBar.foreground": "#ffffff",
+        "statusBar.debuggingForeground": "#ffffff",
+        "activityBar.activeBackground": "#1a1a1a",
+        "activityBar.activeBorder": "#606020",
+        "activityBar.background": "#1a1a1a",
+        "activityBar.foreground": "#e7e7e7",
+        "activityBar.inactiveForeground": "#e7e7e799",
+        "activityBarBadge.background": "#606020",
+        "activityBarBadge.foreground": "#e7e7e7",
+        "sash.hoverBorder": "#1a1a1a",
+        "titleBar.activeBackground": "#000000",
+        "titleBar.activeForeground": "#e7e7e7",
+        "titleBar.inactiveBackground": "#00000099",
+        "titleBar.inactiveForeground": "#e7e7e799",
+        "commandCenter.border": "#e7e7e799"
+    },
+    "[jsonc]": {
+        "editor.defaultFormatter": "vscode.json-language-features"
+    },
+    "[yaml]": {
+        "editor.defaultFormatter": "redhat.vscode-yaml"
+    },
+    "window.customTitleBarVisibility": "never",
+    "cursor.cpp.disabledLanguages": [
+        "plaintext"
+    ],
+    "editor.accessibilitySupport": "off",
+    "application.shellEnvironmentResolutionTimeout": 15,
+    "i18n-ally.displayLanguage": "de",
+    "explorer.confirmDragAndDrop": false,
+    "typescript.updateImportsOnFileMove.enabled": "always",
+    "testely.typescript.fileExtension": ".test.ts",
+    "testely.typescript.location": "same directory (nested in __tests__)"
+}

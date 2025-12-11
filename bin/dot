@@ -204,9 +204,47 @@ cmd_link() {
   log_info "Ensuring config home '$CONFIG_HOME'"
   mkdir -p "$CONFIG_HOME"
 
+  function link_cursor() {
+    local target="$HOME/Library/Application Support/Cursor/User"
+
+    if [ -d "$target" ]; then
+      [ "$verbose" = true ] && log_info "Linking Cursor"
+      for file in "$DOTFILES/config/cursor"/*; do
+        if [ -f "$file" ]; then
+          local target_file="$target/$(basename "$file")"
+          if [ -e "$target_file" ]; then
+            if [ -L "$target_file" ]; then
+              log_warning "$target_file symlink already exists... Skipping."
+              continue
+            else
+              local backup_file="$target_file.backup"
+              mv "$target_file" "$target_file.backup"
+              log_warning "$target_file already exists... Creating a backup in $backup_file."
+            fi
+          fi
+
+          [ "$verbose" = true ] && log_info "Linking $(basename "$file")"
+          ln -s "$file" "$target_file"
+        fi
+      done
+    else
+      log_warning "Cursor config directory not found... Skipping."
+    fi
+  }
+
   if [ "$pkg" = "all" ]; then
     # Handle all packages in config directory
     for config in "$DOTFILES/config"/*; do
+
+      if [ "$config" = "cursor" ]; then
+        link_cursor
+        continue
+      fi
+
+      if [ "$config" = "karabiner" ]; then
+        continue
+      fi
+    
       if [ -d "$config" ]; then
 
         local target="$CONFIG_HOME/$(basename "$config")"
@@ -230,26 +268,31 @@ cmd_link() {
 
   else
     # Handle specific package
-    local target="$CONFIG_HOME/$pkg"
-    if [ -d "$DOTFILES/config/$pkg" ]; then
-      if [ "$operation" = "link" ]; then
-        if [ -e "$target" ]; then
-          log_warning "~${target#"$HOME"} already exists... Skipping."
-        else
-          [ "$verbose" = true ] && log_info "Linking $pkg"
-          ln -s "$DOTFILES/config/$pkg" "$target"
-        fi
-      else # unlink
-        if [ -L "$target" ]; then
-          [ "$verbose" = true ] && log_info "Unlinking $target"
-          rm "$target"
-        elif [ -e "$target" ]; then
-          log_warning "Skipping \"$target\" because it is not a symlink"
-        fi
-      fi
+
+    if [ "$pkg" = "cursor" ]; then
+      link_cursor
     else
-      log_error "Package $pkg not found in config directory"
-      return 1
+      local target="$CONFIG_HOME/$pkg"
+      if [ -d "$DOTFILES/config/$pkg" ]; then
+        if [ "$operation" = "link" ]; then
+          if [ -e "$target" ]; then
+            log_warning "~${target#"$HOME"} already exists... Skipping."
+          else
+            [ "$verbose" = true ] && log_info "Linking $pkg"
+            ln -s "$DOTFILES/config/$pkg" "$target"
+          fi
+        else # unlink
+          if [ -L "$target" ]; then
+            [ "$verbose" = true ] && log_info "Unlinking $target"
+            rm "$target"
+          elif [ -e "$target" ]; then
+            log_warning "Skipping \"$target\" because it is not a symlink"
+          fi
+        fi
+      else
+        log_error "Package $pkg not found in config directory"
+        return 1
+      fi
     fi
   fi
 

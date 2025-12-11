@@ -14,12 +14,6 @@ config/zsh/.zsh_history
 config/zsh/.zcompdump
 config/zsh/.zsh_sessions
 config/zsh/.zcompcache/brew_all_commands
-config/cursor/*
-!config/cursor/User/
-!config/cursor/User/**
-config/cursor/User/History
-config/cursor/User/**/globalStorage
-config/cursor/User/**/workspaceStorage
 
 config/zsh/extensions/*
 !config/zsh/extensions/.gitkeep
