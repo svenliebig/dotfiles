@@ -23,16 +23,17 @@ prepend_path $SOFTWARE/bin
 [[ -a ~/.localrc ]] && source ~/.localrc
 
 # list all files in $ZDOTDIR/extensions and source them
-if [[ -d "$ZDOTDIR/extensions" && -n "$ZDOTDIR/extensions"(/N^F) ]]; then
-else
-  local items=("$ZDOTDIR/extensions"/*)
+if [[ -d "$ZDOTDIR/extensions" && -n "$ZDOTDIR/extensions"/*(/N) ]]; then
+  echo "📂 Loading extensions..."
   for file in "$ZDOTDIR/extensions"/*; do
     [[ -f "$file" && -r "$file" ]] && source "$file"
   done
+else
+  echo "No files in extensions"
 fi
 
 
-if [[ -x "$(command -v boo)" ]]; then
+if alias boo &>/dev/null; then
   boo init -s
 fi
 
