@@ -2,6 +2,7 @@
 --  I promise not to create any merge conflicts in this directory :)
 --
 -- See the kickstart.nvim README for more information
---
+
+vim.g.ruby_host_prog = vim.fn.expand '~/.local/share/mise/shims/ruby'
 
 return {}
