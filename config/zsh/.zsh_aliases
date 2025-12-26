@@ -26,7 +26,9 @@ alias cdriu="cd $REPOSITORIES/isbj/utils"
 alias cdd="cd $DOTFILES"
 
 # Node Organizer
-alias boo=". $REPOSITORIES/git/binary-organizer/boo.sh"
+if [[ -f "$REPOSITORIES/git/binary-organizer/boo.sh" ]]; then
+  alias boo=". $REPOSITORIES/git/binary-organizer/boo.sh"
+fi
 
 # This is because I'm stupid
 alias :q="exit"
