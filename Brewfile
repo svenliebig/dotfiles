@@ -47,6 +47,7 @@ brew "python"                          # python (latest)
 brew "ripgrep"                         # very fast file searcher
 brew "tmux"                            # terminal multiplexer
 brew "go"                              # go (latest)
+brew "raycast"                         # a better Alfred
 
 # to be sorted
 # brew "cloc"                            # lines of code counter
