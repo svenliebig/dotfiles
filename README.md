@@ -14,6 +14,8 @@ The first thing you need to do is to clone this repo into a location of your cho
 xcode-select --install
 ```
 
+In the meanwhile, [create](https://docs.github.com/en/authentication/connecting-to-github-with-ssh/generating-a-new-ssh-key-and-adding-it-to-the-ssh-agent) and add a new SSH key to your Github.
+
 ```bash
 mkdir -p ~/workspace/repositories/git
 cd ~/workspace/repositories/git
@@ -24,19 +26,42 @@ DOTFILES="$(pwd)" bin/dot link zsh
 
 Restart your terminal.
 
-```
+```bash
 dot homebrew install
+
+# restart your terminal after
 dot homebrew bundle
-dot link nvim
+
+# restart your terminal afterdot link nvim
 dot link ghostty
 dot link tmux
+dot link nvim
+dot link ripgrep
+dot link lazygit
+dot link git
 ```
+
+### Cursor
+
+Install Cursor, then:
+
+```bash
+dot link cursor
+```
+
+### Tmux
 
 Tmux specific, we need to clear our the plugins folder and install the tmux package manager:
 
-```
+```bash
 rm -rf "$DOTFILES/config/tmux/plugins/*"
 git clone https://github.com/tmux-plugins/tpm "$DOTFILES/config/tmux/plugins/tpm"
+```
+
+Start Tmux with `tmux`. If it's not working, use:
+
+```bash
+~/.config/tmux/plugins/tpm/bin/install_plugins
 ```
 
 ### Java Development
