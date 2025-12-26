@@ -52,8 +52,22 @@ setup_macos() {
   log_info "Show Path bar in Finder"
   defaults write com.apple.finder ShowPathbar -bool true
 
-  log_info "Show Status bar in Finder"
-  defaults write com.apple.finder ShowStatusBar -bool true
+  if defaults read com.apple.dock persistent-apps >/dev/null 2>&1; then
+    log_info "Remove all apps from the Dock"
+    defaults delete com.apple.dock persistent-apps
+  fi
+
+  log_info "Automatically hide and show the Dock"
+  defaults write com.apple.dock autohide -bool true
+
+  log_info "Turn off suggested and recent apps in the Dock"
+  defaults write com.apple.dock show-recents -bool false
+
+  log_info "Restart Dock"
+  killall Dock
+
+  # log_info "Show Status bar in Finder"
+  # defaults write com.apple.finder Show  StatusBar -bool true
 
   log_info "Disable press-and-hold for keys in favor of key repeat"
   for app in "Cursor" "Windsurf" "Visual Studio Code" "Ghostty"; do
@@ -70,6 +84,13 @@ setup_macos() {
 
   log_info "Set a shorter Delay until key repeat"
   defaults write NSGlobalDomain InitialKeyRepeat -int 15
+
+  log_info "Turn off natural scrolling on trackpads"
+  defaults write NSGlobalDomain com.apple.swipescrolldirection -bool true
+
+  log_info "Adding Keyboard Layout to the System"
+  mkdir -p "/Library/Keyboard Layouts/"
+  sudo cp -R "$DOTFILES/resources/keyboard_layout/Roman.bundle" "/Library/Keyboard Layouts/"
 
   # log_info "Enable tap to click (Trackpad)"
   # defaults write com.apple.driver.AppleBluetoothMultitouch.trackpad Clicking -bool true
