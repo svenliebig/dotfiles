@@ -1,0 +1,32 @@
+#!/usr/bin/env bash
+
+source "$DOTFILES/bin/lib/common.sh"
+command_name=$(basename "${BASH_SOURCE[0]}")
+
+if ! command -v shasum %>/dev/null; then
+  log_error "command shasum is not installed. Exiting."
+  exit 1
+fi
+
+usage() {
+  cat <<EOF
+  $(fmt_key "Usage:") $(fmt_key "$command_name") $(fmt_value "<file>")
+
+Check the SHA of the clipboard against the SHA of a file.
+
+Options:
+    -h, --help       Show this help message
+EOF
+}
+
+main() {
+  if [ $# -lt 1 ]; then
+    usage
+    exit 0
+  fi
+
+  [[ "$(pbpaste | tr -d '[:space:]')" == "$(shasum -a 256 "$1" | awk '{print $1}')" ]] \
+  && echo "✅ match" || echo "❌ mismatch"
+}
+
+main "$@"
