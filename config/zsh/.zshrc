@@ -227,6 +227,10 @@ fi
 # bun completions
 [ -s "$SOFTWARE/bun/_bun" ] && source "$SOFTWARE/bun/_bun"
 
+# load nvm
+[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
+[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
+
 [[ -s "$SDKMAN_DIR/bin/sdkman-init.sh" ]] && source "$SDKMAN_DIR/bin/sdkman-init.sh"
 
 echo "\033[32m\033[0m .zshrc loaded"
