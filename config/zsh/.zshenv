@@ -19,7 +19,8 @@ export CACHEDIR="$WORKSPACE/.cache"
 export GOPATH="$CACHEDIR/go"
 export GRADLE_USER_HOME="$CACHEDIR/gradle"
 export SDKMAN_DIR="$CACHEDIR/sdkman"
-export NVM_DIR="$HOME/.config/nvm"
+export NVM_DIR="$XDG_CONFIG_HOME/nvm"
+export NPM_CONFIG_USERCONFIG="$XDG_CONFIG_HOME/npm/.npmrc"
 
 # deprecated and replaced with HF_HOME
 export TRANSFORMERS_CACHE="$CACHEDIR/transformers"
