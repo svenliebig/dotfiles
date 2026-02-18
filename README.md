@@ -14,6 +14,25 @@ The first thing you need to do is to clone this repo into a location of your cho
 xcode-select --install
 ```
 
+### Setup Git
+
+Easiest way by now is to install the `gh` CLI and authenticate yourself through that ([Guide](https://gist.github.com/Manoj-Paramsetti/dc957bdd6a4430275d0fc28a0dc43ae9)).
+
+```sh
+gh auth login
+```
+
+Choose SSH and login via browser.
+
+Setup your minimum user credentials:
+
+```sh
+git config set user.email <GH_EMAIL>
+git config set user.name <NAME>
+```
+
+### Cloning
+
 In the meanwhile, [create](https://docs.github.com/en/authentication/connecting-to-github-with-ssh/generating-a-new-ssh-key-and-adding-it-to-the-ssh-agent) and add a new SSH key to your Github.
 
 ```bash
