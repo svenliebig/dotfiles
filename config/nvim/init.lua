@@ -300,7 +300,7 @@ require('lazy').setup({
   -- Then, because we use the `opts` key (recommended), the configuration runs
   -- after the plugin has been loaded as `require(MODULE).setup(opts)`.
 
-  { -- Useful plugin to show you pending keybinds.
+  {                     -- Useful plugin to show you pending keybinds.
     'folke/which-key.nvim',
     event = 'VimEnter', -- Sets the loading event to 'VimEnter'
     opts = {
@@ -381,7 +381,7 @@ require('lazy').setup({
       { 'nvim-telescope/telescope-ui-select.nvim' },
 
       -- Useful for getting pretty icons, but requires a Nerd Font.
-      { 'nvim-tree/nvim-web-devicons', enabled = vim.g.have_nerd_font },
+      { 'nvim-tree/nvim-web-devicons',            enabled = vim.g.have_nerd_font },
     },
     config = function()
       -- Telescope is a fuzzy finder that comes with a lot of different things that
@@ -489,7 +489,7 @@ require('lazy').setup({
       'WhoIsSethDaniel/mason-tool-installer.nvim',
 
       -- Useful status updates for LSP.
-      { 'j-hui/fidget.nvim', opts = {} },
+      { 'j-hui/fidget.nvim',    opts = {} },
 
       -- Allows extra capabilities provided by blink.cmp
       'saghen/blink.cmp',
@@ -921,21 +921,53 @@ require('lazy').setup({
   { -- Highlight, edit, and navigate code
     'nvim-treesitter/nvim-treesitter',
     build = ':TSUpdate',
-    main = 'nvim-treesitter.configs', -- Sets main module to use for opts
+    config = function()
+      local ts = require('nvim-treesitter')
+
+      -- Only needed if you want non-default install options.
+      -- ts.setup { install_dir = vim.fn.stdpath('data') .. '/site' }
+      ts.setup()
+
+      -- Kickstart-style “ensure_installed”
+      ts.install {
+        'bash', 'c', 'diff', 'html', 'lua', 'luadoc',
+        'markdown', 'markdown_inline', 'query', 'vim', 'vimdoc',
+      }
+
+      -- Enable TS features per filetype (new model)
+      vim.api.nvim_create_autocmd('FileType', {
+        pattern = {
+          'bash', 'c', 'diff', 'html', 'lua', 'markdown', 'query', 'vim', 'vimdoc',
+          -- add more filetypes you care about
+        },
+        callback = function()
+          -- syntax highlighting + incremental parsing (Neovim core)
+          vim.treesitter.start()
+
+          -- folds (Neovim core)
+          vim.wo.foldexpr = 'v:lua.vim.treesitter.foldexpr()'
+          vim.wo.foldmethod = 'expr'
+
+          -- indentation (provided by nvim-treesitter)
+          -- If you want to exclude ruby like before, don’t set this when ft == 'ruby'
+          vim.bo.indentexpr = "v:lua.require'nvim-treesitter'.indentexpr()"
+        end,
+      })
+    end,
     -- [[ Configure Treesitter ]] See `:help nvim-treesitter`
-    opts = {
-      ensure_installed = { 'bash', 'c', 'diff', 'html', 'lua', 'luadoc', 'markdown', 'markdown_inline', 'query', 'vim', 'vimdoc' },
-      -- Autoinstall languages that are not installed
-      auto_install = true,
-      highlight = {
-        enable = true,
-        -- Some languages depend on vim's regex highlighting system (such as Ruby) for indent rules.
-        --  If you are experiencing weird indenting issues, add the language to
-        --  the list of additional_vim_regex_highlighting and disabled languages for indent.
-        additional_vim_regex_highlighting = { 'ruby' },
-      },
-      indent = { enable = true, disable = { 'ruby' } },
-    },
+    -- opts = {
+    --   ensure_installed = { 'bash', 'c', 'diff', 'html', 'lua', 'luadoc', 'markdown', 'markdown_inline', 'query', 'vim', 'vimdoc' },
+    --   -- Autoinstall languages that are not installed
+    --   auto_install = true,
+    --   highlight = {
+    --     enable = true,
+    --     -- Some languages depend on vim's regex highlighting system (such as Ruby) for indent rules.
+    --     --  If you are experiencing weird indenting issues, add the language to
+    --     --  the list of additional_vim_regex_highlighting and disabled languages for indent.
+    --     additional_vim_regex_highlighting = { 'ruby' },
+    --   },
+    --   indent = { enable = true, disable = { 'ruby' } },
+    -- },
     -- There are additional nvim-treesitter modules that you can use to interact
     -- with nvim-treesitter. You should go explore a few and see what interests you:
     --
