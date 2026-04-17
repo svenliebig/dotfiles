@@ -22,6 +22,9 @@ export SDKMAN_DIR="$CACHEDIR/sdkman"
 export NVM_DIR="$XDG_CONFIG_HOME/nvm"
 export NPM_CONFIG_USERCONFIG="$XDG_CONFIG_HOME/npm/.npmrc"
 
+# TBD - Docker Desktop UI is still using $HOME/.docker as root. They don't care.
+export DOCKER_CONFIG="$XDG_CONFIG_HOME/docker"
+
 # deprecated and replaced with HF_HOME
 export TRANSFORMERS_CACHE="$CACHEDIR/transformers"
 export HF_HOME="$CACHEDIR/huggingface"
@@ -39,10 +42,13 @@ export RIPGREP_CONFIG_PATH="$HOME/.config/ripgrep/config"
 fpath=(
     $DOTFILES/config/zsh/functions
     /usr/local/share/zsh/site-functions
+    $HOME/.docker/completions
     $fpath
 )
 
 typeset -aU path
+
+[[ -n "$GOPATH" && -d "$GOPATH/bin" ]] && path=("$GOPATH/bin" $path)
 
 export EDITOR='nvim'
 export GIT_EDITOR='nvim'
