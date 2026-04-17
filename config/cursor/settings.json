@@ -487,5 +487,8 @@
     "explorer.confirmDragAndDrop": false,
     "typescript.updateImportsOnFileMove.enabled": "always",
     "testely.typescript.fileExtension": ".test.ts",
-    "testely.typescript.location": "same directory (nested in __tests__)"
+    "testely.typescript.location": "same directory (nested in __tests__)",
+    "git.blame.editorDecoration.enabled": true,
+    "git.blame.statusBarItem.enabled": false,
+    "notebook.output.wordWrap": true
 }
