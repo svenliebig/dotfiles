@@ -123,6 +123,11 @@ end)
 -- Enable break indent
 vim.o.breakindent = true
 
+-- Default indentation: 2 spaces
+vim.o.tabstop = 2
+vim.o.shiftwidth = 2
+vim.o.expandtab = true
+
 -- Save undo history
 vim.o.undofile = true
 
@@ -209,6 +214,16 @@ vim.keymap.set('n', '<C-k>', '<C-w><C-k>', { desc = 'Move focus to the upper win
 
 -- [[ Basic Autocommands ]]
 --  See `:help lua-guide-autocommands`
+
+-- Force 2-space indentation for JSON files
+vim.api.nvim_create_autocmd('FileType', {
+  pattern = 'json',
+  callback = function()
+    vim.bo.tabstop = 2
+    vim.bo.shiftwidth = 2
+    vim.bo.expandtab = true
+  end,
+})
 
 -- Highlight when yanking (copying) text
 --  Try it with `yap` in normal mode
