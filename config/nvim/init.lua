@@ -948,23 +948,11 @@ require('lazy').setup({
     config = function()
       local ts = require 'nvim-treesitter'
 
-      -- Only needed if you want non-default install options.
-      -- ts.setup { install_dir = vim.fn.stdpath('data') .. '/site' }
-      ts.setup()
-
-      -- Kickstart-style “ensure_installed”
-      ts.install {
-        'bash',
-        'c',
-        'diff',
-        'html',
-        'lua',
-        'luadoc',
-        'markdown',
-        'markdown_inline',
-        'query',
-        'vim',
-        'vimdoc',
+      ts.setup {
+        ensure_installed = {
+          'bash', 'c', 'diff', 'html', 'lua', 'luadoc',
+          'markdown', 'markdown_inline', 'query', 'vim', 'vimdoc',
+        },
       }
 
       -- Enable TS features per filetype (new model)
