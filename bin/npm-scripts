@@ -1,0 +1,51 @@
+#!/usr/bin/env bash
+
+# List packages that require install scripts (need a rebuild when ignore-scripts is true)
+
+execute=false
+while getopts "e" opt; do
+    case $opt in
+        e) execute=true ;;
+        *) echo "Usage: npm-scripts [-e]" >&2; exit 1 ;;
+    esac
+done
+
+lockfile="package-lock.json"
+
+if [[ ! -f "$lockfile" ]]; then
+    echo "No package-lock.json found in current directory." >&2
+    exit 1
+fi
+
+packages=$(grep -B5 '"hasInstallScript": true' "$lockfile" \
+    | grep '"node_modules/' \
+    | sed 's/.*"node_modules\///;s/".*//')
+
+if [[ -z "$packages" ]]; then
+    echo "No packages with install scripts found."
+    exit 0
+fi
+
+count=$(echo "$packages" | wc -l | tr -d ' ')
+
+echo ""
+echo -e "  \x1B[1;33m$count\x1B[0m package(s) with install scripts found:"
+echo ""
+
+echo "$packages" | while read -r pkg; do
+    echo -e "  \x1B[1;34m>\x1B[0m $pkg"
+done
+
+if [[ "$execute" == true ]]; then
+    echo ""
+    echo "$packages" | while read -r pkg; do
+        echo -e "  \x1B[1;32mRebuilding\x1B[0m $pkg..."
+        npm rebuild "$pkg"
+    done
+    echo ""
+else
+    echo ""
+    echo -e "  Run \x1B[1;32mnpm rebuild <package>\x1B[0m to rebuild individual packages,"
+    echo -e "  or  \x1B[1;32mnpm-scripts -e\x1B[0m to rebuild all of them."
+    echo ""
+fi
