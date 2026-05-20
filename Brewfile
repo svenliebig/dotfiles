@@ -13,7 +13,7 @@ if OS.mac?
   # brew "borders"                       # add borders to windows
 
   # Applications
-  cask "ghostty"                       # a better terminal emulator
+  cask "ghostty"                         # a better terminal emulator
   # cask "wezterm"                       # a better terminal emulator
   cask "1password/tap/1password-cli"   # 1Password CLI
   # cask "karabiner-elements"            # keyboard customizer
@@ -22,17 +22,16 @@ if OS.mac?
   # Fonts
   # cask "font-symbols-only-nerd-font"   # nerd-only symbols font
   # cask "font-monaspace"                # Preferred monospace font
-  cask "font-caskaydia-cove-nerd-font" # preferred nerd font
-  cask "font-cascadia-code"            # preferred monospace font
+  brew "raycast"                         # a better Alfred
 
 elsif OS.linux?
-  brew "xclip"                         # access to clipboard (similar to pbcopy/pbpaste)
+  # brew "xclip"                         # access to clipboard (similar to pbcopy/pbpaste)
 end
 
 # Latest versions of some core utilities
 # brew "bash"                            # bash shell
 # brew "git"                             # Git version control
-brew "grep"                            # grep
+brew "grep"                              # grep
 # brew "vim"                             # Vim editor
 # brew "zsh"                             # zsh shell
 
@@ -47,7 +46,9 @@ brew "python"                          # python (latest)
 brew "ripgrep"                         # very fast file searcher
 brew "tmux"                            # terminal multiplexer
 brew "go"                              # go (latest)
-brew "raycast"                         # a better Alfred
+
+cask "font-caskaydia-cove-nerd-font"   # preferred nerd font
+cask "font-cascadia-code"              # preferred monospace font
 
 # to be sorted
 # brew "cloc"                            # lines of code counter
