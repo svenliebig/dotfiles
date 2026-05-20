@@ -84,13 +84,17 @@ I hope you enjoy your Neovim journey,
 P.S. You can delete this when you're done too. It's your config now! :)
 --]]
 
-vim.g.ruby_host_prog = vim.fn.expand '~/.local/share/mise/shims/ruby'
-
 -- Set <space> as the leader key
 -- See `:help mapleader`
 --  NOTE: Must happen before plugins are loaded (otherwise wrong leader will be used)
 vim.g.mapleader = ' '
 vim.g.maplocalleader = ' '
+
+-- Disable unused remote-plugin providers (we only use pure-Lua plugins).
+vim.g.loaded_perl_provider = 0
+vim.g.loaded_node_provider = 0
+vim.g.loaded_python3_provider = 0
+vim.g.loaded_ruby_provider = 0
 
 -- Set to true if you have a Nerd Font installed and selected in the terminal
 vim.g.have_nerd_font = true
@@ -147,6 +151,9 @@ vim.o.timeoutlen = 300
 -- Configure how new splits should be opened
 vim.o.splitright = true
 vim.o.splitbelow = true
+vim.o.foldlevel = 99
+vim.o.foldlevelstart = 99
+vim.o.foldenable = false
 
 -- Sets how neovim will display certain whitespace characters in the editor.
 --  See `:help 'list'`
@@ -290,6 +297,7 @@ require('lazy').setup({
   -- See `:help gitsigns` to understand what the configuration keys do
   { -- Adds git related signs to the gutter, as well as utilities for managing changes
     'lewis6991/gitsigns.nvim',
+    event = { 'BufReadPre', 'BufNewFile' },
     opts = {
       signs = {
         add = { text = '+' },
@@ -315,7 +323,7 @@ require('lazy').setup({
   -- Then, because we use the `opts` key (recommended), the configuration runs
   -- after the plugin has been loaded as `require(MODULE).setup(opts)`.
 
-  {                     -- Useful plugin to show you pending keybinds.
+  { -- Useful plugin to show you pending keybinds.
     'folke/which-key.nvim',
     event = 'VimEnter', -- Sets the loading event to 'VimEnter'
     opts = {
@@ -396,7 +404,7 @@ require('lazy').setup({
       { 'nvim-telescope/telescope-ui-select.nvim' },
 
       -- Useful for getting pretty icons, but requires a Nerd Font.
-      { 'nvim-tree/nvim-web-devicons',            enabled = vim.g.have_nerd_font },
+      { 'nvim-tree/nvim-web-devicons', enabled = vim.g.have_nerd_font },
     },
     config = function()
       -- Telescope is a fuzzy finder that comes with a lot of different things that
@@ -495,6 +503,7 @@ require('lazy').setup({
   {
     -- Main LSP Configuration
     'neovim/nvim-lspconfig',
+    event = { 'BufReadPre', 'BufNewFile' },
     dependencies = {
       -- Automatically install LSPs and related tools to stdpath for Neovim
       -- Mason must be loaded before its dependents so we need to set it up here.
@@ -504,7 +513,7 @@ require('lazy').setup({
       'WhoIsSethDaniel/mason-tool-installer.nvim',
 
       -- Useful status updates for LSP.
-      { 'j-hui/fidget.nvim',    opts = {} },
+      { 'j-hui/fidget.nvim', opts = {} },
 
       -- Allows extra capabilities provided by blink.cmp
       'saghen/blink.cmp',
@@ -937,7 +946,7 @@ require('lazy').setup({
     'nvim-treesitter/nvim-treesitter',
     build = ':TSUpdate',
     config = function()
-      local ts = require('nvim-treesitter')
+      local ts = require 'nvim-treesitter'
 
       -- Only needed if you want non-default install options.
       -- ts.setup { install_dir = vim.fn.stdpath('data') .. '/site' }
@@ -945,14 +954,31 @@ require('lazy').setup({
 
       -- Kickstart-style “ensure_installed”
       ts.install {
-        'bash', 'c', 'diff', 'html', 'lua', 'luadoc',
-        'markdown', 'markdown_inline', 'query', 'vim', 'vimdoc',
+        'bash',
+        'c',
+        'diff',
+        'html',
+        'lua',
+        'luadoc',
+        'markdown',
+        'markdown_inline',
+        'query',
+        'vim',
+        'vimdoc',
       }
 
       -- Enable TS features per filetype (new model)
       vim.api.nvim_create_autocmd('FileType', {
         pattern = {
-          'bash', 'c', 'diff', 'html', 'lua', 'markdown', 'query', 'vim', 'vimdoc',
+          'bash',
+          'c',
+          'diff',
+          'html',
+          'lua',
+          'markdown',
+          'query',
+          'vim',
+          'vimdoc',
           -- add more filetypes you care about
         },
         callback = function()
