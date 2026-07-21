@@ -21,6 +21,7 @@ export GRADLE_USER_HOME="$CACHEDIR/gradle"
 export SDKMAN_DIR="$CACHEDIR/sdkman"
 export NVM_DIR="$XDG_CONFIG_HOME/nvm"
 export NPM_CONFIG_USERCONFIG="$XDG_CONFIG_HOME/npm/.npmrc"
+export ANDROID_HOME="$SOFTWARE/android/sdk"
 
 # TBD - Docker Desktop UI is still using $HOME/.docker as root. They don't care.
 export DOCKER_CONFIG="$XDG_CONFIG_HOME/docker"
@@ -48,7 +49,12 @@ fpath=(
 
 typeset -aU path
 
+# If GOPATH exists add GOPATH/bin to $path
 [[ -n "$GOPATH" && -d "$GOPATH/bin" ]] && path=("$GOPATH/bin" $path)
+# If ANDROID_HOME exists add ANDROID_HOME/platform_tools to $path
+[[ -n "$ANDROID_HOME" && -d "$ANDROID_HOME/platform-tools" ]] && path=("$ANDROID_HOME/platform-tools" $path)
+# If ANDROID_HOME exists add ANDROID_HOME/emulator to $path
+[[ -n "$ANDROID_HOME" && -d "$ANDROID_HOME/emulator" ]] && path=("$ANDROID_HOME/emulator" $path)
 
 export EDITOR='nvim'
 export GIT_EDITOR='nvim'
