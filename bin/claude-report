@@ -1,0 +1,204 @@
+#!/usr/bin/env bash
+#
+# claude-report — Append a token/time record for the current Claude Code session
+# to ~/workspace/claude-comparsion.json, tagged as a `bmad` or `bhappy` run.
+#
+# Meant to be run from inside Claude Code right after a task's answer completes:
+#
+#     ! claude-report bmad
+#     ! claude-report bhappy
+#
+# It reads the current session's transcript(s) that Claude Code writes under
+# ~/.claude/projects/<slug>/, and records:
+#   - question ............ the last real user prompt (typed question)
+#   - main_thread_tokens .. tokens used by the main session thread
+#   - sub_agents_tokens ... tokens used by all spawned subagents
+#   - total_tokens ........ main + subagents
+#   - total_time .......... how long that question's answer took
+#   - type ................ BMAD or BHAPPY
+#
+# Existing entries are never overwritten — each run appends one array element.
+#
+# TOKEN DEFINITION
+#   Claude Code logs each streamed assistant message several times, and every
+#   turn re-reads the whole cached context (cache_read), which would inflate a
+#   naive sum by ~20x. So we deduplicate by message id and count only
+#   cache_creation tokens (the new content processed) — this matches Claude's
+#   own reported per-subagent token count. cache_read is intentionally excluded.
+#   Tokens are rounded to "k" (e.g. 58k). The in-flight turn that runs this
+#   command is not yet in the transcript, so it is not counted.
+
+set -euo pipefail
+
+OUT_FILE="$HOME/workspace/claude-comparsion.json"
+PROJECTS_DIR="$HOME/.claude/projects"
+
+# --- argument: bmad | bhappy ------------------------------------------------
+ARG="${1:-}"
+case "$ARG" in
+  bmad)   TYPE="BMAD" ;;
+  bhappy) TYPE="BHAPPY" ;;
+  *)
+    echo "usage: claude-report <bmad|bhappy>" >&2
+    exit 2 ;;
+esac
+
+command -v jq >/dev/null 2>&1 || { echo "error: jq is required (brew install jq)" >&2; exit 1; }
+
+# --- locate the current session's transcript --------------------------------
+SESSION_ID="${CLAUDE_CODE_SESSION_ID:-}"
+if [[ -n "$SESSION_ID" ]]; then
+  TRANSCRIPT="$(find "$PROJECTS_DIR" -name "${SESSION_ID}.jsonl" -type f 2>/dev/null | head -1)"
+else
+  TRANSCRIPT="$(find "$PROJECTS_DIR" -name '*.jsonl' -type f 2>/dev/null \
+    | xargs -I{} stat -f '%m %N' {} 2>/dev/null | sort -rn | head -1 | cut -d' ' -f2-)"
+  SESSION_ID="$(basename "$TRANSCRIPT" .jsonl)"
+fi
+
+if [[ -z "$TRANSCRIPT" || ! -f "$TRANSCRIPT" ]]; then
+  echo "error: could not find transcript for session '${SESSION_ID:-<unknown>}'" >&2
+  exit 1
+fi
+
+SESSION_DIR="$(dirname "$TRANSCRIPT")/${SESSION_ID}"
+SUBAGENT_DIR="$SESSION_DIR/subagents"
+
+# --- reusable jq snippets ---------------------------------------------------
+# Deduplicate assistant messages by id (they are logged multiple times while
+# streaming) and sum cache_creation tokens = the new tokens processed.
+CACHE_CREATE_SUM='(map(select(.type=="assistant" and .message.usage!=null and .message.id!=null)
+      | {id: .message.id, v: (.message.usage.cache_creation_input_tokens // 0)})
+    | group_by(.id) | map(.[0].v) | add) // 0'
+
+# A genuine typed user prompt: a string that is not a tool result, not an
+# injected/system block (<command>, <task-notification>, <bash-input>, ...),
+# and not a "## Context Usage" report.
+PROMPT_FILTER='select(.type=="user"
+  and (.message.content|type=="string")
+  and ((.isMeta // false) | not)
+  and ((. | has("toolUseResult")) | not)
+  and ((.message.content|startswith("<")) | not)
+  and ((.message.content|startswith("#")) | not)
+  and ((.message.content|ltrimstr(" ")|startswith("Caveat:")) | not))'
+
+# --- tokens -----------------------------------------------------------------
+MAIN_TOKENS="$(jq -s "$CACHE_CREATE_SUM" "$TRANSCRIPT")"
+
+SUB_TOKENS=0
+if [[ -d "$SUBAGENT_DIR" ]]; then
+  shopt -s nullglob
+  SUB_FILES=("$SUBAGENT_DIR"/*.jsonl)
+  shopt -u nullglob
+  if [[ ${#SUB_FILES[@]} -gt 0 ]]; then
+    SUB_TOKENS="$(jq -s "$CACHE_CREATE_SUM" "${SUB_FILES[@]}")"
+  fi
+fi
+
+TOTAL_TOKENS=$(( MAIN_TOKENS + SUB_TOKENS ))
+
+# --- question (last real user prompt) ---------------------------------------
+QUESTION="$(jq -rs "map($PROMPT_FILTER | .message.content) | last // \"(no user prompt found)\"" "$TRANSCRIPT")"
+
+# --- model & effort ---------------------------------------------------------
+# Model is recorded per assistant message in the transcript (take the last one).
+# Effort is NOT stored in the transcript; it is read from the CLAUDE_EFFORT env
+# var that Claude Code exports into `! ` shell commands.
+MODEL="$(jq -r 'select(.type=="assistant") | .message.model // empty' "$TRANSCRIPT" | tail -1)"
+[[ -z "$MODEL" ]] && MODEL="unknown"
+EFFORT="${CLAUDE_EFFORT:-unknown}"
+
+# --- timing -----------------------------------------------------------------
+# Measure how long the answer to that question took: from the prompt timestamp
+# to the last assistant message of its turn. The turn ends at the next
+# user-initiated event (a new prompt, a `! command` -> <bash-input>, or the
+# "## Context Usage" report Claude injects when the turn completes).
+START_ISO="$(jq -rs "map($PROMPT_FILTER | .timestamp) | last // empty" "$TRANSCRIPT")"
+
+END_ISO=""
+if [[ -n "$START_ISO" ]]; then
+  # Earliest boundary event strictly after the prompt.
+  BOUNDARY_ISO="$(jq -rs --arg start "$START_ISO" '
+    map(select(.type=="user" and (.message.content|type=="string") and (.timestamp > $start)
+        and ( (.message.content|startswith("<bash-input>"))
+           or (.message.content|startswith("## Context Usage"))
+           or ( ((.message.content|startswith("<"))|not)
+                and ((.message.content|startswith("#"))|not)
+                and ((.isMeta // false)|not)
+                and ((.|has("toolUseResult"))|not) ) ))
+      | .timestamp)
+    | sort | first // empty' "$TRANSCRIPT")"
+
+  # Last assistant message after the prompt and before that boundary.
+  END_ISO="$(jq -rs --arg start "$START_ISO" --arg boundary "$BOUNDARY_ISO" '
+    map(select(.type=="assistant" and .timestamp != null and (.timestamp > $start)
+        and ($boundary == "" or .timestamp < $boundary))
+      | .timestamp)
+    | sort | last // empty' "$TRANSCRIPT")"
+fi
+
+# Parse ISO-8601 (UTC, drop fractional seconds) to epoch seconds on macOS.
+iso_to_epoch() {
+  local iso="${1%%.*}"; iso="${iso%Z}"
+  date -u -j -f "%Y-%m-%dT%H:%M:%S" "$iso" +%s 2>/dev/null || echo ""
+}
+
+DURATION_STR="n/a"
+if [[ -n "$START_ISO" && -n "$END_ISO" ]]; then
+  START_EPOCH="$(iso_to_epoch "$START_ISO")"
+  END_EPOCH="$(iso_to_epoch "$END_ISO")"
+  if [[ -n "$START_EPOCH" && -n "$END_EPOCH" ]]; then
+    SECS=$(( END_EPOCH - START_EPOCH ))
+    (( SECS < 0 )) && SECS=0
+    H=$(( SECS / 3600 )); M=$(( (SECS % 3600) / 60 )); S=$(( SECS % 60 ))
+    if   (( H > 0 )); then DURATION_STR="${H}h ${M}m ${S}s"
+    elif (( M > 0 )); then DURATION_STR="${M}m ${S}s"
+    else                   DURATION_STR="${S}s"
+    fi
+  fi
+fi
+
+# --- format tokens as "58k" -------------------------------------------------
+fmt_k() {
+  local n="$1"
+  if (( n >= 1000 )); then
+    printf '%dk' "$(( (n + 500) / 1000 ))"
+  else
+    printf '%d' "$n"
+  fi
+}
+
+MAIN_STR="$(fmt_k "$MAIN_TOKENS")"
+SUB_STR="$(fmt_k "$SUB_TOKENS")"
+TOTAL_STR="$(fmt_k "$TOTAL_TOKENS")"
+
+# --- append to the JSON array (never overwrite) -----------------------------
+mkdir -p "$(dirname "$OUT_FILE")"
+[[ -s "$OUT_FILE" ]] || echo '[]' > "$OUT_FILE"
+
+TMP="$(mktemp)"
+jq \
+  --arg question "$QUESTION" \
+  --arg total_tokens "$TOTAL_STR" \
+  --arg sub_agents_tokens "$SUB_STR" \
+  --arg main_thread_tokens "$MAIN_STR" \
+  --arg total_time "$DURATION_STR" \
+  --arg type "$TYPE" \
+  --arg model "$MODEL" \
+  --arg effort "$EFFORT" \
+  '. + [{
+      question: $question,
+      total_tokens: $total_tokens,
+      sub_agents_tokens: $sub_agents_tokens,
+      main_thread_tokens: $main_thread_tokens,
+      total_time: $total_time,
+      type: $type,
+      model: $model,
+      effort: $effort
+    }]' "$OUT_FILE" > "$TMP" && mv "$TMP" "$OUT_FILE"
+
+# --- summary to stdout ------------------------------------------------------
+echo "Recorded ${TYPE} run -> $OUT_FILE"
+echo "  question:   ${QUESTION:0:80}"
+echo "  tokens:     total ${TOTAL_STR} (main ${MAIN_STR} + subagents ${SUB_STR})"
+echo "  time:       ${DURATION_STR}"
+echo "  model:      ${MODEL}   effort: ${EFFORT}"
