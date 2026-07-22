@@ -52,5 +52,12 @@ clipboard-trim-trailing-spaces = true
 
 mouse-hide-while-typing = true
 
+# treat Option as Alt so tmux Meta bindings (M-a etc.) work
+macos-option-as-alt = true
+
 # make SUPER+A result in x02, which is C-b for tmux
 keybind = ctrl+alt+shift+super+a=text:\x02
+
+# keybind = ctrl+alt+shift+super+g=text:\x02g   # lazygit popup
+# keybind = ctrl+alt+shift+super+s=text:\x02s   # session picker
+# keybind = ctrl+alt+shift+super+f=text:\x02f   # fleet pane

@@ -20,3 +20,8 @@ config/zsh/extensions/*
 
 # MacOS
 .DS_Store
+
+# Claude
+home/.claude/*
+!home/.claude/settings.json
+!home/.claude/CLAUDE.md
