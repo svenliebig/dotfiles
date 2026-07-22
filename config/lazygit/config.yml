@@ -140,12 +140,8 @@ gui:
       - "⠧"
       - "⠇"
       - "⠏"
-      # - "|"
-      # - /
-      # - "-"
-      # - \
     # The "speed" of the spinner in milliseconds.
-    rate: 50
+    rate: 40
   # Status panel view.
   # One of 'dashboard' (default) | 'allBranchesLog'
   statusPanelView: dashboard
@@ -387,6 +383,7 @@ keybinding:
     increaseRenameSimilarityThreshold: )
     decreaseRenameSimilarityThreshold: (
     openDiffTool: <c-t>
+    newWorktree: w
   status:
     checkForUpdate: u
     recentRepos: <enter>
@@ -425,8 +422,6 @@ keybinding:
     setUpstream: u
     fetchRemote: f
     sortOrder: s
-  worktrees:
-    viewWorktreeOptions: w
   commits:
     squashDown: s
     renameCommit: r
@@ -446,7 +441,6 @@ keybinding:
     markCommitAsBaseForRebase: B
     tagCommit: T
     checkoutCommit: <space>
-    resetCherryPick: <c-R>
     copyCommitAttributeToClipboard: "y"
     openLogMenu: <c-l>
     openInBrowser: o
@@ -471,3 +465,8 @@ keybinding:
     bulkMenu: b
   commitMessage:
     commitMenu: <c-o>
+customCommands:
+  - key: "<c-b>"
+    context: "localBranches"
+    command: "gh pr view --web {{.SelectedLocalBranch.Name}}"
+    description: "Open PR in browser"
