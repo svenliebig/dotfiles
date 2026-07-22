@@ -51,3 +51,6 @@ clipboard-write = allow
 clipboard-trim-trailing-spaces = true
 
 mouse-hide-while-typing = true
+
+# make SUPER+A result in x02, which is C-b for tmux
+keybind = ctrl+alt+shift+super+a=text:\x02
