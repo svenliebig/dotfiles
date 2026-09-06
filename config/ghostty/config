@@ -61,3 +61,8 @@ keybind = ctrl+alt+shift+super+a=text:\x02
 # keybind = ctrl+alt+shift+super+g=text:\x02g   # lazygit popup
 # keybind = ctrl+alt+shift+super+s=text:\x02s   # session picker
 # keybind = ctrl+alt+shift+super+f=text:\x02f   # fleet pane
+# Platform-specific overrides. The `?` prefix makes the include optional —
+# Ghostty silently skips it if the file isn't present. Deploy config.linux
+# only on Linux machines, config.macos only on macOS (or leave either out).
+config-file = ?config.linux
+config-file = ?config.macos

@@ -1,0 +1,9 @@
+# Linux-only Ghostty config.
+# Loaded by the main `config` via `config-file = ?config.linux`.
+# Should NOT be deployed to ~/.config/ghostty/ on macOS.
+
+# Ctrl+C copies when there's a selection, otherwise falls through to the
+# program (SIGINT). The `performable:` prefix is what enables the fallthrough.
+# Ctrl+V always pastes.
+keybind = performable:ctrl+c=copy_to_clipboard
+keybind = ctrl+v=paste_from_clipboard
