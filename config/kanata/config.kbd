@@ -1,0 +1,32 @@
+;; kanata: macOS-like Cmd/Ctrl ergonomics on Linux
+;;
+;; Physical layout (Keychron in Win/Linux mode, left side of spacebar):
+;;     [LCtrl] [LMeta] [LAlt] [Space]
+;; After this config:
+;;     [LAlt]  [LMeta] [LCtrl] [Space]
+;;
+;; Net effect: the thumb key (was LAlt) now acts as Ctrl, matching macOS
+;; Cmd muscle memory. The old Ctrl position becomes Alt.
+;;
+;; Plus: pinky (Alt) + Tab        → Ctrl+PageDown (Firefox/Chrome next-tab)
+;;       pinky (Alt) + Shift+Tab  → Ctrl+PageUp   (Firefox/Chrome prev-tab)
+;;       pinky (Alt) + d          → Ctrl+D
+;;       pinky (Alt) + u          → Ctrl+U
+;;
+;; Why PageDown/Up instead of Ctrl+Tab: the WM catches Ctrl+Tab for app
+;; cycling, so kanata emits PageDown/Up — also a native browser tab-switch
+;; binding, which the WM ignores.
+
+(defcfg
+  process-unmapped-keys yes
+  danger-enable-cmd      no
+  concurrent-tap-hold    yes   ;; required by defchordsv2
+)
+
+(defsrc
+  lctl lalt
+)
+
+(deflayer base
+  lalt lctl
+)

@@ -1,0 +1,12 @@
+[Unit]
+Description=Kanata keyboard remapper
+Documentation=https://github.com/jtroo/kanata
+
+[Service]
+Type=simple
+ExecStart=/var/usrlocal/bin/kanata --cfg /etc/kanata/config.kbd
+Restart=on-failure
+Nice=-20
+
+[Install]
+WantedBy=multi-user.target

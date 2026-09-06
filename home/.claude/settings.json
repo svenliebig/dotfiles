@@ -109,7 +109,7 @@
             "command": "if start=$(cat /tmp/claude-prompt-start 2>/dev/null); then end=$(date +%s); elapsed=$((end - start)); echo \"{\\\"systemMessage\\\": \\\"Response time: ${elapsed}s\\\"}\"; fi"
           }
         ]
-      },
+      }
     ],
     "SessionStart": [],
     "SessionEnd": [
