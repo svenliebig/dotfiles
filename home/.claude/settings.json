@@ -5,15 +5,13 @@
     "commit": "",
     "pr": ""
   },
-    "permissions": {
+  "permissions": {
     "allow": [
       "Bash(basename *)",
       "Bash(brew info *)",
       "Bash(brew list *)",
       "Bash(bun *)",
-      "Bash(bunx *)",
       "Bash(cd *)",
-      "Bash(curl *)",
       "Bash(cut *)",
       "Bash(date *)",
       "Bash(df *)",
@@ -66,7 +64,6 @@
       "Bash(uname *)",
       "Bash(uniq *)",
       "Bash(wc *)",
-      "Bash(wget *)",
       "Bash(which *)",
       "Bash(whoami *)",
       "Bash(yq *)",
@@ -98,7 +95,13 @@
     "ask": [
       "Bash(gh pr merge *)",
       "Bash(docker push *)",
-      "Bash(npm publish *)"
+      "Bash(npm publish *)",
+      "Bash(curl *)",
+      "Bash(wget *)",
+      "Bash(nc *)",
+      "Bash(ncat *)",
+      "Bash(socat *)",
+      "Bash(bunx *)"
     ],
     "additionalDirectories": [
       "~/.claude/"
