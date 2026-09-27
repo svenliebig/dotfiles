@@ -1,0 +1,34 @@
+#!/usr/bin/env bash
+#
+# Fork the Claude Code session running in a tmux window into a new session,
+# opened in a vertical split next to it.
+#
+#   claude-fork-pane [target-window] [cwd]
+#
+# Bound to prefix+C in config/tmux/tmux.conf. The session id comes from
+# claude-session-id, which reads the pane -> session map published by
+# claude-statusline.
+#
+# --fork-session gives the new session its own id seeded with the full
+# conversation history, so the original keeps running untouched in its pane
+# and the two never contend for the same transcript.
+
+set -u
+
+window="${1:-}"
+cwd="${2:-$PWD}"
+
+if ! found=$(claude-session-id -p "$window" 2>/dev/null); then
+  tmux display-message "claude: no session found in this window"
+  exit 0
+fi
+pane=${found%% *}
+id=${found#* }
+
+# The id is a UUID, but quote it properly rather than trusting that.
+cmd=$(printf 'claude --resume %q --fork-session' "$id")
+
+# -t is required: without it tmux splits the attached client's active pane,
+# which is not necessarily the pane the session was resolved from.
+tmux split-window -h -t "$pane" -c "$cwd" "$cmd"
+tmux display-message "claude: forked ${id%%-*}"

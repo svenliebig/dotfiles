@@ -1,0 +1,87 @@
+#!/usr/bin/env bash
+#
+# Print the Claude Code session id running in a tmux window.
+#
+#   claude-session-id [-p] [target-window]
+#
+#   -p   print "<pane-id> <session-id>" instead of just the session id, for
+#        callers that need to act on the pane the session lives in.
+#
+# The mapping is published by bin/claude-statusline, which runs inside the
+# pane on every statusline refresh and writes $TMUX_PANE -> session_id into
+# ~/.cache/claude-panes/. Panes are searched active-first, so in a window with
+# several Claude instances you get the one you are looking at.
+#
+# Exits 1 with a message on stderr when no Claude session is found, so callers
+# can branch on it.
+
+set -u
+
+CACHE_DIR="$HOME/.cache/claude-panes"
+
+with_pane=0
+if [ "${1:-}" = "-p" ] || [ "${1:-}" = "--pane" ]; then
+  with_pane=1
+  shift
+fi
+target="${1:-}"
+
+[ -n "${TMUX:-}" ] || {
+  echo "claude-session-id: not inside tmux" >&2
+  exit 1
+}
+
+# Prune entries for panes that no longer exist. Pane ids are never reused by
+# tmux, so a stale entry can only ever leak, never mislead -- but the cache
+# should not grow forever either.
+prune_stale() {
+  [ -d "$CACHE_DIR" ] || return 0
+  local live f
+  live=$(tmux list-panes -a -F '#{pane_id}' 2>/dev/null) || return 0
+  [ -n "$live" ] || return 0
+  for f in "$CACHE_DIR"/*; do
+    [ -e "$f" ] || continue
+    printf '%s\n' "$live" | grep -qxF "%$(basename "$f")" || rm -f "$f"
+  done
+}
+
+# Panes of the target window, active one first, so that a window running
+# several Claude instances yields the one you are looking at.
+panes_active_first() {
+  local list
+  if [ -n "$target" ]; then
+    list=$(tmux list-panes -t "$target" -F '#{pane_active} #{pane_id}' 2>/dev/null) || return 1
+  else
+    list=$(tmux list-panes -F '#{pane_active} #{pane_id}' 2>/dev/null) || return 1
+  fi
+  {
+    printf '%s\n' "$list" | grep '^1 ' || true
+    printf '%s\n' "$list" | grep '^0 ' || true
+  } | awk '{print $2}'
+}
+
+prune_stale
+
+pane=""
+id=""
+while read -r p; do
+  [ -n "$p" ] || continue
+  f="$CACHE_DIR/${p#%}"
+  [ -s "$f" ] || continue
+  id=$(cat "$f")
+  pane="$p"
+  break
+done <<EOF
+$(panes_active_first)
+EOF
+
+if [ -z "$id" ]; then
+  echo "claude-session-id: no Claude session found in this window" >&2
+  exit 1
+fi
+
+if [ "$with_pane" = "1" ]; then
+  printf '%s %s\n' "$pane" "$id"
+else
+  printf '%s\n' "$id"
+fi

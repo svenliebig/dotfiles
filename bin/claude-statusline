@@ -26,10 +26,13 @@ ICON_STYLE="${CYAN}$(printf '\xf3\xb0\x8f\x98')${RESET}"        # nf-md-palette 
 ICON_USAGE="${YELLOW}$(printf '\xf3\xb0\x89\x81')${RESET}"      # nf-md-gauge       U+F0241
 ICON_LINES="${CYAN}$(printf '\xef\x91\x80')${RESET}"            # nf-fa-file_text   U+F440
 ICON_AGENT="${DIM}$(printf '\xf3\xb0\x9a\xa9')${RESET}"         # nf-md-robot       U+F06A9
+ICON_SESSION="${DIM}$(printf '\xef\x8a\x92')${RESET}"           # nf-fa-hashtag     U+F292
 
 # Feature flags (set env vars to 0 to disable)
 SHOW_CONTEXT_TOKENS="${CLAUDE_STATUSLINE_TOKENS:-1}"
 SHOW_USAGE="${CLAUDE_STATUSLINE_USAGE:-1}"
+# 1 = first 8 chars (enough to match ~/.claude/projects/*/<id>.jsonl), full = whole UUID
+SHOW_SESSION="${CLAUDE_STATUSLINE_SESSION:-1}"
 
 # Read JSON input from stdin
 input=$(cat)
@@ -46,6 +49,23 @@ tee_usage_cache() {
   command -v sketchybar >/dev/null 2>&1 && sketchybar --trigger claude_usage_update &
 }
 tee_usage_cache
+
+# Record which Claude session is running in this tmux pane, so tmux key
+# bindings can act on it (see bin/claude-session-id). The statusline is the
+# only thing that both runs inside the pane and is handed the session id,
+# which makes it the natural place to publish the mapping. Pane ids are stable
+# for the life of the pane; dead panes are filtered out by the reader.
+tee_pane_session() {
+  [ -n "$TMUX_PANE" ] || return 0
+  local dir="$HOME/.cache/claude-panes" file id
+  id=$(echo "$input" | jq -r '.session_id // empty' 2>/dev/null)
+  [ -n "$id" ] || return 0
+  file="$dir/${TMUX_PANE#%}"
+  [ "$id" = "$(cat "$file" 2>/dev/null)" ] && return 0
+  mkdir -p "$dir" || return 0
+  printf '%s' "$id" >"${file}.tmp" && mv "${file}.tmp" "$file"
+}
+tee_pane_session
 
 # Helper functions for extracting data
 get_model_name() { echo "$input" | jq -r '.model.display_name // "Unknown Model"' | sed 's/ (.*)//'; }
@@ -77,6 +97,17 @@ get_lines_changed() {
 
 get_agent_name() {
   echo "$input" | jq -r '.agent.name // empty'
+}
+
+get_session_id() {
+  [ "$SHOW_SESSION" = "0" ] && return
+  local id=$(echo "$input" | jq -r '.session_id // empty')
+  [ -z "$id" ] && return
+  if [ "$SHOW_SESSION" = "full" ]; then
+    printf "%s" "$id"
+  else
+    printf "%s" "${id:0:8}"
+  fi
 }
 
 get_context_percent() {
@@ -230,6 +261,7 @@ context_bar=$(build_context_bar)
 usage_display=$(build_usage_display)
 lines_display=$(get_lines_changed)
 agent_name=$(get_agent_name)
+session_id=$(get_session_id)
 
 # Get project name and handle subdirectory display
 project=$(basename "$project_dir")
@@ -283,6 +315,9 @@ fi
 # ── Meta (collapsible) ──
 if [ "$term_width" -gt 160 ] && [ "$output_style" != "default" ]; then
   seg_add "${ICON_STYLE} ${DIM}${output_style}${RESET}"
+fi
+if [ "$term_width" -gt 140 ] && [ -n "$session_id" ]; then
+  seg_add "${ICON_SESSION} ${DIM}${session_id}${RESET}"
 fi
 
 # Prepend branch on wide terminals
