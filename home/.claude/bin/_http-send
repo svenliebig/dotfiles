@@ -25,9 +25,20 @@
 
 set -euo pipefail
 
+here="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+# shellcheck source=_http-common
+source "$here/_http-common"
+
 method="${HTTP_SEND_METHOD:-}"
 if [[ -z "$method" ]]; then
   echo "_http-send: internal helper — run 'post', 'put', 'patch' or 'delete' instead." >&2
+  exit 2
+fi
+# The method lands in the request line, so keep it to a bare token: a value
+# with spaces in it would let whoever set the variable write the rest of that
+# line themselves.
+if [[ ! "$method" =~ ^[A-Z]+$ ]]; then
+  echo "_http-send: '$method' is not a valid HTTP method." >&2
   exit 2
 fi
 cmd="$(printf '%s' "$method" | tr 'A-Z' 'a-z')"
@@ -68,9 +79,10 @@ override it with -H 'Content-Type: ...'.
 Examples:
 $examples
 
-$method only — these flags are rejected: -X/--request, -d/--data*, --json,
--F/--form, -T/--upload-file, -G/--get, -I/--head, -o/--output/-O.
-Use curl directly for multipart forms or streaming file uploads.
+$method only, http and https only, one request per call. The extra arguments
+are an allowlist: -H/--header, --compressed, --connect-timeout, --max-time.
+Everything else is refused — use curl directly for multipart forms, streaming
+uploads or anything else outside that set.
 EOF
 }
 
@@ -127,17 +139,20 @@ if [[ $have_body -eq 0 && ! -t 0 && "$method" != DELETE ]]; then
   have_body=1
 fi
 
-# Keep the body under this wrapper's control: reject anything that changes the
-# method, adds a second body, or redirects the response away from stdout.
-for arg in "$@"; do
-  case "$arg" in
-    -X|--request|-d|--data|--data-*|--json|-F|--form|--form-*|-T|--upload-file|-G|--get|-I|--head|-o|--output|-O|--remote-name)
-      echo "$cmd: '$arg' is not allowed — this wrapper only performs $method requests" >&2
-      echo "$cmd: with the body as its second argument. Use curl directly if you need something else." >&2
-      exit 2
-      ;;
-  esac
-done
+http_check_args "$cmd" "$@"
+
+# '@<path>' reads the body from a file. The positional syntax cannot tell that
+# apart from text that merely begins with '@', so make the file case explicit:
+# a missing or unreadable path is an error here rather than an obscure curl
+# failure, and text that looks like a file reference cannot quietly become one.
+if [[ $have_body -eq 1 && "$body" == @* && "$body" != "@-" ]]; then
+  body_file="${body#@}"
+  if [[ ! -f "$body_file" || ! -r "$body_file" ]]; then
+    echo "$cmd: '$body' reads the body from a file, but '$body_file' is not a readable file." >&2
+    echo "$cmd: to send text starting with '@' verbatim, pipe it in: printf %s '$body' | $cmd <url> -" >&2
+    exit 2
+  fi
+fi
 
 # Only default the Content-Type when the caller has not set one themselves;
 # curl would otherwise send the header twice.
@@ -151,7 +166,6 @@ for arg in "$@"; do
   else
     case "$arg" in
       -H|--header) expect_header=1 ;;
-      --header=*)  header="${arg#--header=}" ;;
       -H?*)        header="${arg#-H}" ;;
     esac
   fi
@@ -165,11 +179,21 @@ if [[ $have_body -eq 1 && $has_content_type -eq 0 ]]; then
   default_header=(--header 'Content-Type: application/json')
 fi
 
-# A DELETE without a body stays bodyless — POST and PUT keep the explicit
+# Literal text goes through --data-raw, not --data-binary: the latter reads a
+# body starting with '@' as a filename and would send that file instead, so a
+# body the caller did not choose — '@reply to this' — turns into a local file
+# read. Only an explicit @file or @- argument is meant to be expanded.
+#
+# A DELETE without a body stays bodyless, while POST and PUT keep the explicit
 # zero-length body so that servers demanding a Content-Length get one.
-data_arg=(--data-binary "$body")
-if [[ $have_body -eq 0 && "$method" == DELETE ]]; then
-  data_arg=()
+data_arg=()
+if [[ $have_body -eq 1 ]]; then
+  case "$body" in
+    @*) data_arg=(--data-binary "$body") ;;
+    *)  data_arg=(--data-raw "$body") ;;
+  esac
+elif [[ "$method" != DELETE ]]; then
+  data_arg=(--data-raw "")
 fi
 
 max_time_var="${method}_MAX_TIME"
@@ -181,6 +205,7 @@ exec curl \
   --location \
   --post301 --post302 --post303 \
   --fail-with-body \
+  "${http_safe_flags[@]}" \
   --request "$method" \
   --connect-timeout "${!connect_timeout_var:-10}" \
   --max-time "${!max_time_var:-30}" \

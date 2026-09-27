@@ -5,7 +5,7 @@
     "commit": "",
     "pr": ""
   },
-  "permissions": {
+    "permissions": {
     "allow": [
       "Bash(basename *)",
       "Bash(brew info *)",
@@ -133,7 +133,18 @@
     "PreCompact": [],
     "SubagentStart": [],
     "SubagentStop": [],
-    "PreToolUse": [],
+    "PreToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "~/.claude/hooks/no-fetch-exec.sh",
+            "timeout": 10
+          }
+        ]
+      }
+    ],
     "PostToolUse": [],
     "Notification": [],
     "PermissionRequest": [],

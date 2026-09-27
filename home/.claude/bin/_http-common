@@ -1,0 +1,108 @@
+#!/usr/bin/env bash
+#
+# _http-common — argument allowlist and curl hardening shared by `get` and
+# `_http-send` (and through it `post`, `put`, `patch` and `delete`).
+#
+# Sourced by those scripts, never executed.
+#
+# These wrappers exist so an agent can reach an HTTP API without being handed
+# the whole of curl, and that only holds as an allowlist. A blocklist does not
+# survive contact with curl's flag surface: values glue onto short options
+# (-XPOST, -o/tmp/x, -T/etc/passwd), -K reads an entire command line from a
+# file, --next starts a fresh request with fresh options, and -D, --trace-ascii,
+# -c and --etag-save all write files without -o ever appearing. So everything
+# not named here is refused.
+#
+# What this is not: a sandbox. Anything with shell access can run curl itself.
+# What it does buy is that the response only ever arrives on stdout, so putting
+# it on disk takes a visible redirection in the command line instead of a flag
+# buried among the arguments.
+
+# Hardening handed to curl by every wrapper, whatever the method:
+#
+#   --proto, --proto-redir  http and https only. This curl also speaks file,
+#                           gopher, dict, smb, ftp and telnet — an unrestricted
+#                           URL makes `get` a local file reader and a way to
+#                           push arbitrary bytes at services on localhost.
+#   --globoff               without it a URL containing {a,b} or [1-9] quietly
+#                           fans out into several requests.
+#   --max-filesize          a 25 MB ceiling, so an oversized response cannot
+#                           flood stdout and whatever is reading it.
+http_safe_flags=(
+  --proto '=http,https'
+  --proto-redir '=http,https'
+  --globoff
+  --max-filesize 26214400
+)
+
+http_die() {
+  local cmd="$1"
+  shift
+  printf '%s: %s\n' "$cmd" "$*" >&2
+  exit 2
+}
+
+# curl's -H accepts @filename and then reads a header per line from that file,
+# which is both a local file read and wholesale header injection.
+http_check_header() {
+  local cmd="$1" value="$2"
+  case "$value" in
+    @*)
+      http_die "$cmd" "header values cannot be read from a file ('@...') — pass the header inline."
+      ;;
+  esac
+  if [[ "$value" == *$'\n'* || "$value" == *$'\r'* ]]; then
+    http_die "$cmd" "header values cannot contain line breaks."
+  fi
+}
+
+http_check_number() {
+  local cmd="$1" flag="$2" value="$3"
+  if [[ ! "$value" =~ ^[0-9]+([.][0-9]+)?$ ]]; then
+    http_die "$cmd" "'$flag' takes a number of seconds, got '$value'."
+  fi
+}
+
+# http_check_args <command-name> [extra args...]
+#
+# Allows -H/--header (inline value or glued to -H), --compressed and the two
+# timeout flags. Anything else — including a bare word, which curl would treat
+# as a second URL to fetch — exits 2 with an explanation.
+http_check_args() {
+  local cmd="$1"
+  shift
+
+  local arg
+  while [[ $# -gt 0 ]]; do
+    arg="$1"
+    shift
+    case "$arg" in
+      -H|--header)
+        [[ $# -gt 0 ]] || http_die "$cmd" "'$arg' needs a value."
+        http_check_header "$cmd" "$1"
+        shift
+        ;;
+      -H?*)
+        http_check_header "$cmd" "${arg#-H}"
+        ;;
+      --compressed)
+        ;;
+      --connect-timeout|--max-time)
+        [[ $# -gt 0 ]] || http_die "$cmd" "'$arg' needs a value."
+        http_check_number "$cmd" "$arg" "$1"
+        shift
+        ;;
+      -*)
+        printf "%s: '%s' is not an allowed argument.\n" "$cmd" "$arg" >&2
+        printf '%s: allowed are -H/--header, --compressed, --connect-timeout and --max-time.\n' "$cmd" >&2
+        printf '%s: run curl yourself if you need anything else.\n' "$cmd" >&2
+        exit 2
+        ;;
+      *)
+        printf "%s: unexpected argument '%s' — curl would fetch it as a second URL.\n" "$cmd" "$arg" >&2
+        printf '%s: one request per call; pass headers with -H.\n' "$cmd" >&2
+        exit 2
+        ;;
+    esac
+  done
+}
