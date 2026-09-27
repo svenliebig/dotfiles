@@ -1,0 +1,20 @@
+#!/usr/bin/env bash
+#
+# patch — perform an HTTP PATCH and print only the response body.
+#
+#   patch <url> [body|@file|-] [extra curl args...]
+#
+# Companion to `get`: stdout is the response body, status goes to stderr.
+# Run `patch --help` for details. The implementation lives in _http-send,
+# shared with `post` and `put`.
+#
+# Environment:
+#   PATCH_MAX_TIME        total timeout in seconds (default 30)
+#   PATCH_CONNECT_TIMEOUT connect timeout in seconds (default 10)
+
+set -euo pipefail
+
+here="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+
+export HTTP_SEND_METHOD=PATCH
+exec "$here/_http-send" "$@"

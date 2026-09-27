@@ -1,0 +1,20 @@
+#!/usr/bin/env bash
+#
+# post — perform an HTTP POST and print only the response body.
+#
+#   post <url> [body|@file|-] [extra curl args...]
+#
+# Companion to `get`: stdout is the response body, status goes to stderr.
+# Run `post --help` for details. The implementation lives in _http-send,
+# shared with `put` and `patch`.
+#
+# Environment:
+#   POST_MAX_TIME        total timeout in seconds (default 30)
+#   POST_CONNECT_TIMEOUT connect timeout in seconds (default 10)
+
+set -euo pipefail
+
+here="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+
+export HTTP_SEND_METHOD=POST
+exec "$here/_http-send" "$@"

@@ -1,0 +1,77 @@
+#!/usr/bin/env bash
+#
+# get — perform an HTTP GET and print only the response body.
+#
+# A thin wrapper around curl for agent use: stdout carries the response body and
+# nothing else, so the output can be piped straight into jq or read as-is. The
+# status line, content type and size go to stderr. Only GET is possible; flags
+# that would change the method or attach a body are rejected.
+#
+#   get <url> [extra curl args...]
+#
+# Environment:
+#   GET_MAX_TIME        total timeout in seconds (default 30)
+#   GET_CONNECT_TIMEOUT connect timeout in seconds (default 10)
+
+set -euo pipefail
+
+usage() {
+  cat >&2 <<'EOF'
+Usage: get <url> [extra curl args...]
+
+Performs an HTTP GET and prints the response body to stdout.
+Status code, content type and size are written to stderr.
+Non-2xx responses print the body and exit non-zero.
+
+Examples:
+  get https://api.example.com/v1/items
+  get https://api.example.com/v1/items -H 'Accept: application/json'
+  get http://localhost:8080/health | jq .
+
+GET only — these flags are rejected: -X/--request, -d/--data*, --json,
+-F/--form, -T/--upload-file, -I/--head, -o/--output/-O.
+EOF
+}
+
+if [[ $# -eq 0 ]]; then
+  usage
+  exit 2
+fi
+
+case "$1" in
+  -h|--help)
+    usage
+    exit 0
+    ;;
+  -*)
+    echo "get: first argument must be the URL, got '$1'" >&2
+    usage
+    exit 2
+    ;;
+esac
+
+url="$1"
+shift
+
+# Keep this a GET-only tool: reject anything that changes the method, sends a
+# body, or redirects the response away from stdout.
+for arg in "$@"; do
+  case "$arg" in
+    -X|--request|-d|--data|--data-*|--json|-F|--form|--form-*|-T|--upload-file|-I|--head|-o|--output|-O|--remote-name)
+      echo "get: '$arg' is not allowed — this wrapper only performs GET requests." >&2
+      echo "get: use curl directly if you need something else." >&2
+      exit 2
+      ;;
+  esac
+done
+
+exec curl \
+  --silent \
+  --show-error \
+  --location \
+  --fail-with-body \
+  --connect-timeout "${GET_CONNECT_TIMEOUT:-10}" \
+  --max-time "${GET_MAX_TIME:-30}" \
+  --write-out '%{stderr}HTTP %{http_code} · %{content_type} · %{size_download} bytes · %{time_total}s\n' \
+  "$url" \
+  "$@"

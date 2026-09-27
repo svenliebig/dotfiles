@@ -1,0 +1,23 @@
+#!/usr/bin/env bash
+#
+# delete — perform an HTTP DELETE and print only the response body.
+#
+#   delete <url> [body|@file|-] [extra curl args...]
+#
+# Companion to `get`: stdout is the response body, status goes to stderr.
+# The body is optional and usually omitted — a bodyless DELETE sends no
+# Content-Length and no Content-Type at all, and unlike the other wrappers it
+# never picks up a piped stdin on its own; ask for that with '-'. Run
+# `delete --help` for details. The implementation lives in _http-send, shared
+# with `post`, `put` and `patch`.
+#
+# Environment:
+#   DELETE_MAX_TIME        total timeout in seconds (default 30)
+#   DELETE_CONNECT_TIMEOUT connect timeout in seconds (default 10)
+
+set -euo pipefail
+
+here="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+
+export HTTP_SEND_METHOD=DELETE
+exec "$here/_http-send" "$@"

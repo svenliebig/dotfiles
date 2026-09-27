@@ -1,0 +1,191 @@
+#!/usr/bin/env bash
+#
+# _http-send — shared implementation behind the `post`, `put`, `patch` and
+# `delete` wrappers.
+#
+# Not meant to be invoked directly; those wrappers exec this with
+# HTTP_SEND_METHOD set. Mirrors `get`: stdout carries the response body and
+# nothing else, while the status line goes to stderr. The request body is a
+# positional argument rather than a curl flag, so the method can never be
+# changed by accident.
+#
+# DELETE is the one method where a body is the exception rather than the rule,
+# so without one it is sent bodyless — no --data-binary, hence no
+# Content-Length — while POST and PUT keep their explicit zero-length body
+# because servers reject those with 411 otherwise.
+#
+# Redirects are followed with the method and the body preserved: curl's
+# default downgrades the request to a GET on 301/302/303, and --request alone
+# would keep the method name while silently dropping the body, so the
+# --post30x flags are needed as well.
+#
+# Environment (<M> is POST, PUT, PATCH or DELETE):
+#   <M>_MAX_TIME        total timeout in seconds (default 30)
+#   <M>_CONNECT_TIMEOUT connect timeout in seconds (default 10)
+
+set -euo pipefail
+
+method="${HTTP_SEND_METHOD:-}"
+if [[ -z "$method" ]]; then
+  echo "_http-send: internal helper — run 'post', 'put', 'patch' or 'delete' instead." >&2
+  exit 2
+fi
+cmd="$(printf '%s' "$method" | tr 'A-Z' 'a-z')"
+
+usage() {
+  local body_intro omitted examples
+  if [[ "$method" == DELETE ]]; then
+    body_intro="A body is optional and rarely wanted. When you do need one it may be given as:"
+    omitted="  (omitted)   no body at all, whatever stdin is attached to"
+    examples="  $cmd https://api.example.com/v1/items/7
+  $cmd https://api.example.com/v1/items/7 -H 'Authorization: Bearer ...'
+  $cmd https://api.example.com/v1/items '{\"ids\":[1,2]}'"
+  else
+    body_intro="The body may be given as:"
+    omitted="  (omitted)   read from stdin when it is piped, otherwise sent empty"
+    examples="  $cmd https://api.example.com/v1/items '{\"name\":\"box\"}'
+  $cmd https://api.example.com/v1/items @payload.json
+  jq -n '{name:\"box\"}' | $cmd https://api.example.com/v1/items
+  $cmd https://api.example.com/v1/note 'hello' -H 'Content-Type: text/plain'"
+  fi
+
+  cat >&2 <<EOF
+Usage: $cmd <url> [body] [extra curl args...]
+
+Performs an HTTP $method and prints the response body to stdout.
+Status code, content type and size are written to stderr.
+Non-2xx responses print the body and exit non-zero.
+
+$body_intro
+  '<text>'    sent verbatim
+  @<file>     contents of <file>
+  -           read from stdin
+$omitted
+
+Content-Type defaults to application/json for requests that carry a body —
+override it with -H 'Content-Type: ...'.
+
+Examples:
+$examples
+
+$method only — these flags are rejected: -X/--request, -d/--data*, --json,
+-F/--form, -T/--upload-file, -G/--get, -I/--head, -o/--output/-O.
+Use curl directly for multipart forms or streaming file uploads.
+EOF
+}
+
+if [[ $# -eq 0 ]]; then
+  usage
+  exit 2
+fi
+
+case "$1" in
+  -h|--help)
+    usage
+    exit 0
+    ;;
+  -*)
+    echo "$cmd: first argument must be the URL, got '$1'" >&2
+    usage
+    exit 2
+    ;;
+esac
+
+url="$1"
+shift
+
+# The body is positional. A leading '-' means stdin, a leading '@' means a
+# file, anything else starting with '-' is a curl flag and leaves the body
+# unset — in which case a piped stdin is used and a terminal means no body.
+body=""
+have_body=0
+if [[ $# -gt 0 ]]; then
+  case "$1" in
+    -)
+      body="@-"
+      have_body=1
+      shift
+      ;;
+    -*)
+      ;;
+    *)
+      body="$1"
+      have_body=1
+      shift
+      ;;
+  esac
+fi
+
+# A piped stdin supplies the body when none was given — except for DELETE,
+# where a body is the exception and has to be asked for with '-' or an explicit
+# argument. That keeps `delete <url>` bodyless whatever stdin happens to be
+# attached to: scripts and agent shells hand it a pipe or /dev/null, not a
+# terminal, and would otherwise turn every plain delete into a JSON request
+# with an empty body.
+if [[ $have_body -eq 0 && ! -t 0 && "$method" != DELETE ]]; then
+  body="@-"
+  have_body=1
+fi
+
+# Keep the body under this wrapper's control: reject anything that changes the
+# method, adds a second body, or redirects the response away from stdout.
+for arg in "$@"; do
+  case "$arg" in
+    -X|--request|-d|--data|--data-*|--json|-F|--form|--form-*|-T|--upload-file|-G|--get|-I|--head|-o|--output|-O|--remote-name)
+      echo "$cmd: '$arg' is not allowed — this wrapper only performs $method requests" >&2
+      echo "$cmd: with the body as its second argument. Use curl directly if you need something else." >&2
+      exit 2
+      ;;
+  esac
+done
+
+# Only default the Content-Type when the caller has not set one themselves;
+# curl would otherwise send the header twice.
+has_content_type=0
+expect_header=0
+for arg in "$@"; do
+  header=""
+  if [[ $expect_header -eq 1 ]]; then
+    header="$arg"
+    expect_header=0
+  else
+    case "$arg" in
+      -H|--header) expect_header=1 ;;
+      --header=*)  header="${arg#--header=}" ;;
+      -H?*)        header="${arg#-H}" ;;
+    esac
+  fi
+  case "$(printf '%s' "$header" | tr 'A-Z' 'a-z')" in
+    content-type:*) has_content_type=1 ;;
+  esac
+done
+
+default_header=()
+if [[ $have_body -eq 1 && $has_content_type -eq 0 ]]; then
+  default_header=(--header 'Content-Type: application/json')
+fi
+
+# A DELETE without a body stays bodyless — POST and PUT keep the explicit
+# zero-length body so that servers demanding a Content-Length get one.
+data_arg=(--data-binary "$body")
+if [[ $have_body -eq 0 && "$method" == DELETE ]]; then
+  data_arg=()
+fi
+
+max_time_var="${method}_MAX_TIME"
+connect_timeout_var="${method}_CONNECT_TIMEOUT"
+
+exec curl \
+  --silent \
+  --show-error \
+  --location \
+  --post301 --post302 --post303 \
+  --fail-with-body \
+  --request "$method" \
+  --connect-timeout "${!connect_timeout_var:-10}" \
+  --max-time "${!max_time_var:-30}" \
+  ${default_header[@]+"${default_header[@]}"} \
+  ${data_arg[@]+"${data_arg[@]}"} \
+  --write-out '%{stderr}HTTP %{http_code} · %{content_type} · sent %{size_upload} / recv %{size_download} bytes · %{time_total}s\n' \
+  "$url" \
+  "$@"

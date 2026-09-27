@@ -1,0 +1,20 @@
+#!/usr/bin/env bash
+#
+# put — perform an HTTP PUT and print only the response body.
+#
+#   put <url> [body|@file|-] [extra curl args...]
+#
+# Companion to `get`: stdout is the response body, status goes to stderr.
+# Run `put --help` for details. The implementation lives in _http-send,
+# shared with `post` and `patch`.
+#
+# Environment:
+#   PUT_MAX_TIME        total timeout in seconds (default 30)
+#   PUT_CONNECT_TIMEOUT connect timeout in seconds (default 10)
+
+set -euo pipefail
+
+here="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+
+export HTTP_SEND_METHOD=PUT
+exec "$here/_http-send" "$@"
