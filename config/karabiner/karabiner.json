@@ -17,19 +17,29 @@
         },
         "rules": [
           {
-            "description": "Remap Caps Lock to Control if pressed with other keys, to Escape if pressed alone",
+            "description": "Caps Lock to Hyper Key, to Escape if pressed alone (Command + Caps Lock toggles real Caps Lock)",
             "manipulators": [
+              {
+                "type": "basic",
+                "from": {
+                  "key_code": "caps_lock",
+                  "modifiers": { "mandatory": ["command"], "optional": ["any"] }
+                },
+                "to": [{ "key_code": "caps_lock" }]
+              },
               {
                 "type": "basic",
                 "from": {
                   "key_code": "caps_lock",
                   "modifiers": { "optional": ["any"] }
                 },
-                "to": [{ "key_code": "left_control" }],
-                "to_if_alone": [{ "key_code": "escape" }],
-                "to_after_key_up": [
-                  { "set_variable": { "name": "caps_lock_state", "value": 0 } }
-                ]
+                "to": [
+                  {
+                    "key_code": "left_shift",
+                    "modifiers": ["left_command", "left_option", "left_control"]
+                  }
+                ],
+                "to_if_alone": [{ "key_code": "escape" }]
               }
             ]
           },

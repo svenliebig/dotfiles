@@ -16,7 +16,7 @@ if OS.mac?
   cask "ghostty"                         # a better terminal emulator
   # cask "wezterm"                       # a better terminal emulator
   cask "1password/tap/1password-cli"   # 1Password CLI
-  # cask "karabiner-elements"            # keyboard customizer
+  cask "karabiner-elements"            # keyboard customizer
   # cask "nikitabobko/tap/aerospace"     # a tiling window manager
 
   # Fonts
