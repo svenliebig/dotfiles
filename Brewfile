@@ -37,6 +37,7 @@ brew "grep"                              # grep
 
 # packages
 brew "bat"                             # better cat
+brew "glow"                            # markdown viewer in terminal
 brew "fzf"                             # Fuzzy file searcher, used in scripts and in vim
 brew "git-delta"                       # a better git diff
 brew "jq"                              # work with JSON files in shell scripts
