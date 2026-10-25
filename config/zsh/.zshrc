@@ -85,6 +85,7 @@ setopt NO_LIST_BEEP
 setopt LOCAL_OPTIONS
 setopt LOCAL_TRAPS
 setopt PROMPT_SUBST
+setopt interactivecomments
 
 # history
 setopt EXTENDED_HISTORY          # write the history file in the ":start:elapsed;command" format.
