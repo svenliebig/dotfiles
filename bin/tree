@@ -1,0 +1,73 @@
+#!/usr/bin/env bash
+
+# Print the file tree of a directory, skipping node_modules - use: tree [-i name]... [path]
+# -i can be repeated and accepts glob patterns (quote them): tree -i .git -i '*.log'
+# Symlinks are shown with their target but never followed.
+
+shopt -s nullglob dotglob
+
+ignores=("node_modules")
+while getopts "i:" opt; do
+    case "$opt" in
+        i) ignores+=("$OPTARG") ;;
+        *) echo "usage: tree [-i name]... [path]" >&2; exit 2 ;;
+    esac
+done
+shift $((OPTIND - 1))
+
+root="${1:-.}"
+
+if [ ! -d "$root" ]; then
+    echo "'$root' is not a directory" >&2
+    exit 1
+fi
+
+dirs=0
+files=0
+
+ignored() {
+    local pattern
+    for pattern in "${ignores[@]}"; do
+        # shellcheck disable=SC2254 # unquoted on purpose so globs match
+        case "$1" in $pattern) return 0 ;; esac
+    done
+    return 1
+}
+
+walk() {
+    local dir="$1" prefix="$2"
+    local entries=() entry
+
+    for entry in "$dir"/*; do
+        ignored "${entry##*/}" && continue
+        entries+=("$entry")
+    done
+
+    local count=${#entries[@]} i=0 name branch next
+    for entry in "${entries[@]}"; do
+        i=$((i + 1))
+        name="${entry##*/}"
+        if [ "$i" -eq "$count" ]; then
+            branch="└── " next="    "
+        else
+            branch="├── " next="│   "
+        fi
+
+        if [ -L "$entry" ]; then
+            echo "${prefix}${branch}${name} -> $(readlink "$entry")"
+            files=$((files + 1))
+        elif [ -d "$entry" ]; then
+            echo "${prefix}${branch}${name}"
+            dirs=$((dirs + 1))
+            walk "$entry" "${prefix}${next}"
+        else
+            echo "${prefix}${branch}${name}"
+            files=$((files + 1))
+        fi
+    done
+}
+
+echo "$root"
+walk "${root%/}" ""
+echo
+echo "$dirs directories, $files files"
