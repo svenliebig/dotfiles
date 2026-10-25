@@ -77,6 +77,12 @@ alias tls='tmux ls'
 alias tat='tmux attach -t'
 alias tns='tmux new-session -s'
 
+# docker aliases
+alias dcd='docker compose down'
+alias dcu='docker compose up -d'
+alias dcl='docker compose logs'
+alias da='echo "docker aliases:\n\n\t- dcd: docker compose down\n\t- dcu: docker compose up -d\n\t-dcl: docker compose logs"'
+
 # use nvim, but don't make me think about it
 if [[ -n "$(command -v nvim)" ]]; then
     alias vim="nvim"
