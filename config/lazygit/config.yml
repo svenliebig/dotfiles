@@ -304,6 +304,7 @@ notARepository: prompt
 promptToReturnFromSubprocess: true
 services:
   'gitlab.nortal.com': 'gitlab:gitlab.nortal.com'
+  'gitlab.de.nortal.com': 'gitlab:gitlab.de.nortal.com'
 # Keybindings
 keybinding:
   universal:
