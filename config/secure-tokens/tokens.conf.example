@@ -1,0 +1,12 @@
+# Mapping of environment variables to 1Password secret references for
+# load-secure-tokens (alias: lst). Copy this file to tokens.conf, which is
+# gitignored, and adjust it.
+#
+#   NAME => "Vault/Item/field"     read via `op read op://Vault/Item/field`
+#   NAME => $OTHER_NAME            copy a variable mapped above
+#
+# Lines starting with # are comments. Quotes and the op:// prefix are optional.
+
+GITHUB_TOKEN => "Personal/GitHub Token/credential"
+WEATHER_API_URL => "Personal/Weather API/URL"
+GH_TOKEN => $GITHUB_TOKEN

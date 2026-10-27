@@ -1,0 +1,262 @@
+#!/usr/bin/env bash
+
+# load-secure-tokens: Load secrets from 1Password into environment variables
+# Usage: load-secure-tokens [--force] [--status] [--check] [NAME...]
+#
+# The mapping of variable names to 1Password references lives in a separate,
+# gitignored file (see TOKENS_FILE below), one mapping per line:
+#
+#   GITHUB_TOKEN => "Personal/GitHub Token/credential"
+#   GH_TOKEN => $GITHUB_TOKEN
+#
+# A child process can't change its parent's environment, so this script prints
+# `export` statements on stdout and all messages on stderr. The zsh function of
+# the same name (see .zsh_functions) evals that output in the current shell.
+#
+# Flags:
+#   -f, --force    Reload variables even if they are already set
+#   -s, --status   Show which mapped variables are set, without calling 1Password
+#   -c, --check    Verify every reference resolves in 1Password, export nothing
+#   -h, --help     Show this help
+
+set -uo pipefail
+
+TOKENS_FILE="${SECURE_TOKENS_FILE:-$DOTFILES/config/secure-tokens/tokens.conf}"
+
+if [[ -f "$DOTFILES/bin/lib/common.sh" ]]; then
+  source "$DOTFILES/bin/lib/common.sh"
+else
+  echo "Error: Unable to source common.sh" >&2
+  exit 1
+fi
+
+# stdout is reserved for the export statements, so every message goes to stderr
+info() { log_info "$1" >&2; }
+success() { log_success "$1" >&2; }
+warning() { log_warning "$1" >&2; }
+error() { log_error "$1"; }
+hint() { printf "    ${DIM}%s${RESET}\n" "$1" >&2; }
+
+usage() {
+  sed -n '3,20p' "${BASH_SOURCE[0]}" | sed 's/^# \{0,1\}//' >&2
+  hint "Mapping file: $TOKENS_FILE"
+}
+
+# Initialize options
+mode=load
+force=false
+only=()
+
+# Parse command-line arguments
+while [[ $# -gt 0 ]]; do
+  case "$1" in
+    -f|--force)  force=true ;;
+    -s|--status) mode=status ;;
+    -c|--check)  mode=check ;;
+    -h|--help)   usage; exit 0 ;;
+    -*)          error "Unknown option: $1"; usage; exit 1 ;;
+    *)           only+=("$1") ;;
+  esac
+  shift
+done
+
+# Printing exports to a terminal would just show the secrets on screen
+if [[ "$mode" == load && -t 1 ]]; then
+  error "Refusing to print secrets to the terminal."
+  hint "Run it through the shell function: lst (or load-secure-tokens after reload!)"
+  hint "Or eval it yourself: eval \"\$(command load-secure-tokens)\""
+  exit 1
+fi
+
+if [[ ! -r "$TOKENS_FILE" ]]; then
+  error "Mapping file not found: $TOKENS_FILE"
+  hint "Create it from the example: cp $TOKENS_FILE.example $TOKENS_FILE"
+  hint "Or point SECURE_TOKENS_FILE at another file."
+  exit 1
+fi
+
+# Parse the mapping file into parallel arrays (bash 3.2 has no associative arrays)
+names=()
+refs=()
+line_re='^[[:space:]]*([A-Za-z_][A-Za-z0-9_]*)[[:space:]]*=>[[:space:]]*(.*)$'
+line_number=0
+parse_errors=0
+while IFS= read -r line || [[ -n "$line" ]]; do
+  line_number=$((line_number + 1))
+  [[ "$line" =~ ^[[:space:]]*(#|$) ]] && continue
+
+  if [[ ! "$line" =~ $line_re ]]; then
+    error "$(basename "$TOKENS_FILE"):$line_number: can't parse line: $line"
+    hint "Expected: NAME => \"Vault/Item/field\" or NAME => \$OTHER_NAME"
+    parse_errors=$((parse_errors + 1))
+    continue
+  fi
+
+  name="${BASH_REMATCH[1]}"
+  ref="${BASH_REMATCH[2]}"
+  # Trim trailing whitespace and surrounding quotes
+  ref="${ref%"${ref##*[![:space:]]}"}"
+  [[ "$ref" =~ ^\"(.*)\"$ || "$ref" =~ ^\'(.*)\'$ ]] && ref="${BASH_REMATCH[1]}"
+
+  if [[ -z "$ref" ]]; then
+    error "$(basename "$TOKENS_FILE"):$line_number: $name has no reference"
+    parse_errors=$((parse_errors + 1))
+    continue
+  fi
+
+  for existing in ${names[@]+"${names[@]}"}; do
+    [[ "$existing" == "$name" ]] && warning "$(basename "$TOKENS_FILE"):$line_number: $name is mapped more than once, the last one wins"
+  done
+
+  names+=("$name")
+  refs+=("$ref")
+done <"$TOKENS_FILE"
+
+if [[ ${#names[@]} -eq 0 ]]; then
+  error "No mappings in $TOKENS_FILE"
+  exit 1
+fi
+
+# Warn about requested names that aren't mapped
+for wanted in ${only[@]+"${only[@]}"}; do
+  found=false
+  for name in "${names[@]}"; do
+    [[ "$name" == "$wanted" ]] && found=true
+  done
+  [[ "$found" == false ]] && warning "$wanted is not in $(basename "$TOKENS_FILE"), skipping"
+done
+
+is_selected() {
+  [[ ${#only[@]} -eq 0 ]] && return 0
+  local wanted
+  for wanted in "${only[@]}"; do
+    [[ "$wanted" == "$1" ]] && return 0
+  done
+  return 1
+}
+
+# Turn an `op` error message into something actionable
+explain_op_error() {
+  local ref="$1" message="$2"
+  local vault item
+  vault="$(printf '%s' "${ref#op://}" | cut -d/ -f1)"
+  item="$(printf '%s' "${ref#op://}" | cut -d/ -f2)"
+
+  case "$(printf '%s' "$message" | tr '[:upper:]' '[:lower:]')" in
+    *"not currently signed in"*|*"not signed in"*|*"no accounts configured"*|*"session expired"*)
+      hint "1Password CLI is not signed in. Unlock the 1Password app or run: op signin" ;;
+    *"authorization"*|*"dismissed"*|*"desktop app"*|*"connect"*)
+      hint "The 1Password app refused or didn't answer. Unlock it and allow access for the CLI." ;;
+    *"isn't a vault"*|*"vault"*"not found"*|*"no vault"*)
+      hint "Vault '$vault' doesn't exist or isn't shared with you. Check the vault name in 1Password." ;;
+    *"isn't an item"*|*"item"*"not found"*|*"no item"*|*"more than one item"*)
+      hint "Can't find item '$item' in vault '$vault'. Check the item name in 1Password." ;;
+    *"isn't a field"*|*"field"*"not found"*|*"no field"*|*"does not have a field"*)
+      hint "Item '$item' has no field '${ref##*/}'. Check the field label in 1Password." ;;
+    *"invalid secret reference"*|*"invalid character"*)
+      hint "The reference isn't a valid op:// path. Expected: Vault/Item/field" ;;
+  esac
+  [[ -n "$message" ]] && hint "op said: $message"
+}
+
+err_file="$(mktemp)"
+trap 'rm -f "$err_file"' EXIT
+
+# Resolve one mapping into $resolved, or return 1 with an explanation
+resolve() {
+  local name="$1" ref="$2"
+  resolved=""
+
+  # $OTHER copies a variable that is already set or was loaded above
+  if [[ "$ref" =~ ^\$\{?([A-Za-z_][A-Za-z0-9_]*)\}?$ ]]; then
+    local source_name="${BASH_REMATCH[1]}"
+    resolved="${!source_name:-}"
+    if [[ -z "$resolved" ]]; then
+      error "$name: \$$source_name is empty"
+      hint "Map $source_name above $name in $(basename "$TOKENS_FILE"), or check why it failed to load."
+      return 1
+    fi
+    return 0
+  fi
+
+  [[ "$ref" == op://* ]] || ref="op://$ref"
+
+  if ! resolved="$(op read --no-newline "$ref" 2>"$err_file")"; then
+    error "$name: can't read $ref"
+    explain_op_error "$ref" "$(tr '\n' ' ' <"$err_file" | sed 's/^\[ERROR\] [0-9/: ]*//; s/ *$//')"
+    return 1
+  fi
+
+  if [[ -z "$resolved" ]]; then
+    error "$name: $ref is empty in 1Password"
+    hint "The field exists but has no value. Fill it in 1Password."
+    return 1
+  fi
+}
+
+if [[ "$mode" == status ]]; then
+  info "Mappings from $TOKENS_FILE"
+  for i in "${!names[@]}"; do
+    is_selected "${names[$i]}" || continue
+    if [[ -n "${!names[$i]:-}" ]]; then
+      printf "  ${GREEN}✔${RESET} %-28s ${DIM}%s${RESET}\n" "${names[$i]}" "${refs[$i]}" >&2
+    else
+      printf "  ${YELLOW}·${RESET} %-28s ${DIM}%s${RESET}\n" "${names[$i]}" "${refs[$i]}" >&2
+    fi
+  done
+  exit $((parse_errors > 0))
+fi
+
+needs_op=false
+for i in "${!names[@]}"; do
+  is_selected "${names[$i]}" || continue
+  [[ "${refs[$i]}" == \$* ]] && continue
+  [[ "$mode" == check || "$force" == true || -z "${!names[$i]:-}" ]] && needs_op=true
+done
+
+if [[ "$needs_op" == true ]] && ! command -v op &>/dev/null; then
+  error "1Password CLI (op) is not installed or not on PATH."
+  hint "Install it with: brew install 1password-cli"
+  hint "Then enable 'Integrate with 1Password CLI' in the 1Password app (Settings > Developer)."
+  exit 1
+fi
+
+loaded=0
+skipped=0
+failed=0
+for i in "${!names[@]}"; do
+  name="${names[$i]}"
+  is_selected "$name" || continue
+
+  if [[ "$mode" == load && "$force" == false && -n "${!name:-}" ]]; then
+    skipped=$((skipped + 1))
+    continue
+  fi
+
+  if ! resolve "$name" "${refs[$i]}"; then
+    failed=$((failed + 1))
+    continue
+  fi
+
+  # Keep it in this process too, so later $NAME mappings can reference it
+  export "$name=$resolved"
+  if [[ "$mode" == check ]]; then
+    printf "  ${GREEN}✔${RESET} %s\n" "$name" >&2
+  else
+    printf 'export %s=%q\n' "$name" "$resolved"
+  fi
+  loaded=$((loaded + 1))
+done
+
+summary="$loaded $([[ "$mode" == check ]] && echo "resolved" || echo "loaded")"
+[[ $skipped -gt 0 ]] && summary+=", $skipped already set (use --force to reload)"
+[[ $failed -gt 0 ]] && summary+=", $failed failed"
+
+if [[ $failed -gt 0 || $parse_errors -gt 0 ]]; then
+  warning "$summary"
+  exit 1
+elif [[ $loaded -eq 0 && $skipped -gt 0 ]]; then
+  success "All secure tokens already loaded in this session"
+else
+  success "$summary"
+fi

@@ -133,3 +133,12 @@ zfetch() {
   fi
 }
 
+
+# Run bin/load-secure-tokens and eval its exports, so they land in this shell
+load-secure-tokens() {
+  local exports
+  exports="$(command load-secure-tokens "$@")"
+  local exit_code=$?
+  eval "$exports"
+  return $exit_code
+}

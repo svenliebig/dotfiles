@@ -77,6 +77,9 @@ alias tls='tmux ls'
 alias tat='tmux attach -t'
 alias tns='tmux new-session -s'
 
+# load 1Password secrets into this shell (see bin/load-secure-tokens)
+alias lst='load-secure-tokens'
+
 # docker aliases
 alias dcd='docker compose down'
 alias dcu='docker compose up -d'
